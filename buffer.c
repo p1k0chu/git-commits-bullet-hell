@@ -17,10 +17,9 @@ char *Buffer_get_line(Buffer *buffer) {
                 buffer->buffer_start + len + 1,
                 buffer->buffer_size - len - 1);
         memset(buffer->buffer_start + buffer->buffer_size - len - 1, 0, len + 1);
-        len = buffer->buffer_size - len - 1;
     }
 
-    char  *end_of_line = NULL;
+    char   *end_of_line = NULL;
     ssize_t nbytes;
     len = strnlen(buffer->buffer_start, buffer->buffer_size);
     do {
