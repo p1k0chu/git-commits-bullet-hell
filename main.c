@@ -36,7 +36,7 @@ char *Buffer_get_line(Buffer *buffer) {
         fprintf(stderr, "len = %ld\n", len);
     }
 
-    char  *end_of_line;
+    char  *end_of_line = NULL;
     size_t nbytes;
     len = strnlen(buffer->buffer_start, buffer->buffer_size);
     do {
