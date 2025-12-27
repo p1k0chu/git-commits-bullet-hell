@@ -36,9 +36,9 @@ char *Buffer_get_line(Buffer *buffer) {
         if (nbytes == -1) die("read");
 
         len += nbytes;
-    } while (nbytes != 0 &&
-             (end_of_line = (char *)strnchr(buffer->buffer_start, '\n', buffer->buffer_size)) ==
-                 NULL);
+    } while ((end_of_line = (char *)strnchr(buffer->buffer_start, '\n', buffer->buffer_size)) ==
+                 NULL &&
+             nbytes != 0);
 
     if (end_of_line == NULL) {
         if (len >= buffer->buffer_size) {
