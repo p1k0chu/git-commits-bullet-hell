@@ -24,16 +24,11 @@ char *Buffer_get_line(Buffer *buffer) {
     // remove old line
     size_t len = strnlen(buffer->buffer_start, buffer->buffer_size);
     if (len != buffer->buffer_size) {
-        fprintf(stderr, "size = %ld, len = %ld\n", buffer->buffer_size, len);
-        fprintf(stderr, "%.*s\n", (int)buffer->buffer_size, buffer->buffer_start);
         memmove(buffer->buffer_start,
                 buffer->buffer_start + len + 1,
                 buffer->buffer_size - len - 1);
-        fprintf(stderr, "%.*s\n", (int)buffer->buffer_size, buffer->buffer_start);
         memset(buffer->buffer_start + buffer->buffer_size - len - 1, 0, len + 1);
-        fprintf(stderr, "%.*s\n", (int)buffer->buffer_size, buffer->buffer_start);
         len = buffer->buffer_size - len - 1;
-        fprintf(stderr, "len = %ld\n", len);
     }
 
     char  *end_of_line = NULL;
