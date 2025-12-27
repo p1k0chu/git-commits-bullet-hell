@@ -26,4 +26,8 @@ endif()
 message(STATUS "${PROJECT_NAME} version: ${PROJECT_VERSION}")
 
 add_executable(main main.c)
+target_sources(main PRIVATE
+    buffer.c
+    utils.c
+)
 
