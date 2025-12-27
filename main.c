@@ -99,5 +99,6 @@ int main() {
     }
 
     close(git_pipe[0]);
+    free(buffer.buffer_start);
 }
 
