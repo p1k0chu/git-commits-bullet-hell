@@ -32,7 +32,7 @@ char *Buffer_get_line(Buffer *buffer) {
     }
 
     char  *end_of_line = NULL;
-    size_t nbytes;
+    ssize_t nbytes;
     len = strnlen(buffer->buffer_start, buffer->buffer_size);
     do {
         if (len >= buffer->buffer_size) {
