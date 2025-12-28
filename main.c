@@ -32,9 +32,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     }
 
     if (!SDL_CreateWindowAndRenderer("Commits Bullet Hell",
-                                     0,
-                                     0,
-                                     SDL_WINDOW_FULLSCREEN,
+                                     1280,
+                                     720,
+                                     SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE,
                                      &window,
                                      &renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
