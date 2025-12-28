@@ -1,4 +1,5 @@
 #include "buffer.h"
+#include "version.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,10 @@
 #define die(s) fprintf(stderr, "%s\n", s);
 
 int main() {
+    if (isatty(STDERR_FILENO)) {
+        fprintf(stderr, "Version: %s\n", GitCommitsBulletHell_VERSION);
+    }
+
     int   git_pipe[2];
     pid_t pid;
 

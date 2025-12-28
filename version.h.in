@@ -1,0 +1,4 @@
+#pragma once
+
+#define GitCommitsBulletHell_VERSION "@GitCommitsBulletHell_VERSION@"
+
