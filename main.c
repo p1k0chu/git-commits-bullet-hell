@@ -18,12 +18,18 @@
         exit(1);                    \
     }
 
+#define STR(s)  #s
+#define XSTR(s) STR(s)
+
 static Buffer buffer = {0};
 
 static SDL_Window   *window   = NULL;
 static SDL_Renderer *renderer = NULL;
 
-static TTF_Font    *font = NULL;
+static TTF_Font *font = NULL;
+
+static SDL_Texture *text        = NULL;
+static bool         next_commit = true;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -54,7 +60,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
         return SDL_APP_FAILURE;
     }
 
-    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 18.0f))) {
+    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 45.0f))) {
         SDL_Log("Couldn't open font: %s\n", SDL_GetError());
         return SDL_APP_FAILURE;
     }
@@ -89,17 +95,63 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     (void)appstate;
 
-    if (event->type == SDL_EVENT_QUIT) {
+    switch (event->type) {
+    case SDL_EVENT_QUIT:
         return SDL_APP_SUCCESS;
+    case SDL_EVENT_KEY_DOWN:
+        switch (event->key.key) {
+        case SDLK_SPACE:
+            if (!event->key.repeat) next_commit = true;
+            break;
+        }
     }
+
     return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
     (void)appstate;
 
+    if (next_commit) {
+        next_commit = false;
+
+        char *line;
+        if (!(line = Buffer_get_line(&buffer))) die("Buffer_get_line");
+
+        if (line[0] == 0) return SDL_APP_SUCCESS;
+
+        const SDL_Color white_color = {0xff, 0xff, 0xff, 0xff};
+
+        SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, white_color);
+        if (!surface) {
+            SDL_Log(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n", SDL_GetError());
+            return SDL_APP_FAILURE;
+        }
+
+        text = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_DestroySurface(surface);
+
+        if (!text) {
+            SDL_Log(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n", SDL_GetError());
+            return SDL_APP_FAILURE;
+        }
+    }
+
+    const float scale = 1.0f;
+    SDL_SetRenderScale(renderer, scale, scale);
+
+    int       w, h;
+    SDL_FRect dst;
+
+    SDL_GetRenderOutputSize(renderer, &w, &h);
+    SDL_GetTextureSize(text, &dst.w, &dst.h);
+
+    dst.x = ((w / scale) - dst.w) / 2;
+    dst.y = ((h / scale) - dst.h) / 2;
+
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
     SDL_RenderClear(renderer);
+    SDL_RenderTexture(renderer, text, NULL, &dst);
     SDL_RenderPresent(renderer);
 
     return SDL_APP_CONTINUE;
