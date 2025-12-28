@@ -103,6 +103,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDLK_SPACE:
             if (!event->key.repeat) next_commit = true;
             break;
+        case SDLK_ESCAPE:
+            return SDL_APP_SUCCESS;
         }
     }
 
