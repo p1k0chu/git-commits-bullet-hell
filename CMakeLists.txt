@@ -37,12 +37,24 @@ add_custom_command(
     COMMAND xxd -i -n tiny_ttf ${CMAKE_SOURCE_DIR}/font/tiny.ttf > font.h
     DEPENDS font/tiny.ttf
 )
+add_custom_command(
+    OUTPUT heart.h
+    COMMAND xxd -i -n heart_png ${CMAKE_SOURCE_DIR}/assets/heart.png > heart.h
+    DEPENDS assets/heart.png
+)
+add_custom_command(
+    OUTPUT broken_heart.h
+    COMMAND xxd -i -n broken_heart_png ${CMAKE_SOURCE_DIR}/assets/broken_heart.png > broken_heart.h
+    DEPENDS assets/broken_heart.png
+)
 
 add_executable(main main.c)
 target_sources(main PRIVATE
     buffer.c
     utils.c
     font.h
+    heart.h
+    broken_heart.h
 )
 target_link_libraries(main PRIVATE
     SDL3
