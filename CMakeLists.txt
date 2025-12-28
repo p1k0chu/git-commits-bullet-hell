@@ -32,11 +32,17 @@ find_package(SDL3_ttf REQUIRED)
 
 configure_file(version.h.in version.h)
 
+add_custom_command(
+    OUTPUT font.h
+    COMMAND xxd -i -n tiny_ttf ${CMAKE_SOURCE_DIR}/font/tiny.ttf > font.h
+    DEPENDS font/tiny.ttf
+)
+
 add_executable(main main.c)
 target_sources(main PRIVATE
     buffer.c
     utils.c
-    font/tiny.c
+    font.h
 )
 target_link_libraries(main PRIVATE
     SDL3

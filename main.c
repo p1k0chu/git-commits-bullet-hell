@@ -1,5 +1,5 @@
 #include "buffer.h"
-#include "font/tiny.h"
+#include "font.h"
 #include "version.h"
 
 #define SDL_MAIN_USE_CALLBACKS 1
