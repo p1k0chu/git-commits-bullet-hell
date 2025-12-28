@@ -27,6 +27,8 @@ endif()
 
 message(STATUS "${PROJECT_NAME} version: ${PROJECT_VERSION}")
 
+find_package(SDL3 REQUIRED)
+
 configure_file(version.h.in version.h)
 
 add_executable(main main.c)
@@ -34,5 +36,6 @@ target_sources(main PRIVATE
     buffer.c
     utils.c
 )
+target_link_libraries(main PRIVATE SDL3)
 target_include_directories(main PRIVATE ${CMAKE_BINARY_DIR})
 
