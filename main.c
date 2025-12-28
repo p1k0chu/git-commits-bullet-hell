@@ -10,7 +10,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define die(s) fprintf(stderr, "%s\n", s);
+#define die(s)                      \
+    {                               \
+        fprintf(stderr, "%s\n", s); \
+        exit(1);                    \
+    }
 
 static Buffer buffer = {0};
 
