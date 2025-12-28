@@ -27,7 +27,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                        "io.github.p1k0chu.gitcommitsbullethell");
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("Couldn't init sdl video: %s", SDL_GetError());
+        SDL_Log("Couldn't init sdl video: %s\n", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
@@ -37,7 +37,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                      SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE,
                                      &window,
                                      &renderer)) {
-        SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
+        SDL_Log("Couldn't create window/renderer: %s\n", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
