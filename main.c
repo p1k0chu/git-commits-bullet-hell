@@ -17,6 +17,11 @@
         fprintf(stderr, "%s\n", s); \
         exit(1);                    \
     }
+#define sdl_die(s)                  \
+    {                               \
+        SDL_Log(s, SDL_GetError()); \
+        return SDL_APP_FAILURE;     \
+    }
 
 #define STR(s)  #s
 #define XSTR(s) STR(s)
@@ -40,30 +45,20 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                        GitCommitsBulletHell_VERSION,
                        "io.github.p1k0chu.gitcommitsbullethell");
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("Couldn't init sdl video: %s\n", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
+    if (!SDL_Init(SDL_INIT_VIDEO)) sdl_die("Couldn't init sdl video: %s\n");
 
     if (!SDL_CreateWindowAndRenderer("Commits Bullet Hell",
                                      1280,
                                      720,
                                      SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE,
                                      &window,
-                                     &renderer)) {
-        SDL_Log("Couldn't create window/renderer: %s\n", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
+                                     &renderer))
+        sdl_die("Couldn't create window/renderer: %s\n");
 
-    if (!TTF_Init()) {
-        SDL_Log("Couldn't initialize SDL3_ttf: %s\n", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
+    if (!TTF_Init()) sdl_die("Couldn't initialize SDL3_ttf: %s\n");
 
-    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 45.0f))) {
-        SDL_Log("Couldn't open font: %s\n", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
+    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 45.0f)))
+        sdl_die("Couldn't open font: %s\n");
 
     SDL_SetRenderVSync(renderer, 1);
 
@@ -125,18 +120,12 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         const SDL_Color white_color = {0xff, 0xff, 0xff, 0xff};
 
         SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, white_color);
-        if (!surface) {
-            SDL_Log(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n", SDL_GetError());
-            return SDL_APP_FAILURE;
-        }
+        if (!surface) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
 
         text = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_DestroySurface(surface);
 
-        if (!text) {
-            SDL_Log(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n", SDL_GetError());
-            return SDL_APP_FAILURE;
-        }
+        if (!text) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
     }
 
     const float scale = 1.0f;
