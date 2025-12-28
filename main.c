@@ -81,9 +81,11 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     (void)appstate;
 
-    // runs ever yframe
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
 
-    return SDL_APP_SUCCESS;
+    return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
