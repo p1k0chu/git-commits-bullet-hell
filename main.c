@@ -1,10 +1,12 @@
 #include "buffer.h"
+#include "font/tiny.h"
 #include "version.h"
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -20,6 +22,8 @@ static Buffer buffer = {0};
 
 static SDL_Window   *window   = NULL;
 static SDL_Renderer *renderer = NULL;
+
+static TTF_Font    *font = NULL;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -45,7 +49,16 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
         return SDL_APP_FAILURE;
     }
 
-    SDL_SetRenderLogicalPresentation(renderer, 1280, 720, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    if (!TTF_Init()) {
+        SDL_Log("Couldn't initialize SDL3_ttf: %s\n", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
+    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 18.0f))) {
+        SDL_Log("Couldn't open font: %s\n", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
     SDL_SetRenderVSync(renderer, 1);
 
     int   git_pipe[2];
@@ -95,6 +108,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     (void)appstate;
     (void)result;
+
+    if (font) {
+        TTF_CloseFont(font);
+    }
+    TTF_Quit();
 
     close(buffer.fd);
     free(buffer.buffer_start);
