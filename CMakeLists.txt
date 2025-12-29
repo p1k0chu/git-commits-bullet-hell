@@ -66,3 +66,8 @@ target_link_libraries(git-commits-bullet-hell PRIVATE
 )
 target_include_directories(git-commits-bullet-hell PRIVATE ${CMAKE_BINARY_DIR})
 
+install(
+    TARGETS git-commits-bullet-hell
+    DESTINATION bin
+)
+
