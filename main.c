@@ -8,6 +8,7 @@
 #include "version.h"
 
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_render.h>
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
@@ -104,6 +105,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     SDL_GetTextureSize(player_texture, &player.w, &player.h);
 
     SDL_SetRenderVSync(renderer, 1);
+    SDL_SetRenderLogicalPresentation(renderer,
+                                     WINDOW_WIDTH,
+                                     WINDOW_HEIGHT,
+                                     SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     int   git_pipe[2];
     pid_t pid;
@@ -226,9 +231,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     speed_mul = (float)dt / 1000.f;
 
-    int w, h;
-    SDL_GetRenderOutputSize(renderer, &w, &h);
-
     SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
 
     for (size_t i = 0; i < alive_enemies; ++i) {
@@ -259,7 +261,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         const float e_t = e_center_y - e_h / 2;
         const float e_b = e_t + e_h;
 
-        if (e_r < 0 || e_l > w || e_b < 0 || e_t > h) {
+        if (e_r < 0 || e_l > WINDOW_WIDTH || e_b < 0 || e_t > WINDOW_HEIGHT) {
             SDL_DestroyTexture(enemies[i].texture);
             if (i != alive_enemies - 1) {
                 enemies[i] = enemies[alive_enemies - 1];
@@ -296,7 +298,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                                &enemies[alive_enemies].rect.w,
                                &enemies[alive_enemies].rect.h);
 
-            enemies[alive_enemies].rect.x = w - enemies[alive_enemies].rect.w;
+            enemies[alive_enemies].rect.x = WINDOW_WIDTH - enemies[alive_enemies].rect.w;
             enemies[alive_enemies].rect.y = 0;
 
             const float radian = SDL_atan2f(
