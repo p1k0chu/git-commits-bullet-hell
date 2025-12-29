@@ -52,6 +52,9 @@
         SDL_DestroySurface(surface);                                    \
     }
 
+#define WINDOW_WIDTH  1920
+#define WINDOW_HEIGHT 1080
+
 static Buffer buffer = {0};
 
 static SDL_Window   *window   = NULL;
@@ -83,8 +86,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     if (!SDL_Init(SDL_INIT_VIDEO)) sdl_die("Couldn't init sdl video: %s\n");
 
     if (!SDL_CreateWindowAndRenderer("Commits Bullet Hell",
-                                     1280,
-                                     720,
+                                     WINDOW_WIDTH,
+                                     WINDOW_HEIGHT,
                                      SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE,
                                      &window,
                                      &renderer))
