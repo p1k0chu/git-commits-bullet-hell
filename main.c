@@ -219,14 +219,18 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     if (inputs[INPUT_LEFT]) {
         player.x -= PLAYER_SPEED * speed_mul;
+        if (player.x < player.w / 2) player.x = player.w / 2;
     } else if (inputs[INPUT_RIGHT]) {
         player.x += PLAYER_SPEED * speed_mul;
+        if (player.x > WINDOW_WIDTH - player.w / 2) player.x = WINDOW_WIDTH - player.w / 2;
     }
 
     if (inputs[INPUT_UP]) {
         player.y -= PLAYER_SPEED * speed_mul;
+        if (player.y < player.h / 2) player.y = player.h / 2;
     } else if (inputs[INPUT_DOWN]) {
         player.y += PLAYER_SPEED * speed_mul;
+        if (player.y > WINDOW_HEIGHT - player.h / 2) player.y = WINDOW_HEIGHT - player.h / 2;
     }
 
     speed_mul = (float)dt / 1000.f;
