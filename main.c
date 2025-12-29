@@ -62,8 +62,8 @@ static bool next_commit = true;
 
 static Player player = {.alive = true};
 
-enum Inputs { INPUT_LEFT, INPUT_RIGHT, INPUT_UP, INPUT_DOWN };
-static bool inputs[4];
+enum Inputs { INPUT_LEFT, INPUT_RIGHT, INPUT_UP, INPUT_DOWN, INPUT_SHIFT };
+static bool inputs[5];
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -144,6 +144,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDLK_DOWN:
             inputs[INPUT_DOWN] = 1;
             break;
+        case SDLK_LSHIFT:
+            inputs[INPUT_SHIFT] = 1;
+            break;
         }
         break;
     case SDL_EVENT_KEY_UP:
@@ -160,6 +163,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDLK_DOWN:
             inputs[INPUT_DOWN] = 0;
             break;
+        case SDLK_LSHIFT:
+            inputs[INPUT_SHIFT] = 0;
+            break;
         }
     }
 
@@ -175,7 +181,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     unsigned long dt = ms - last_ms;
     last_ms          = ms;
 
-    const float speed_mul = (float)dt / 1000.f;
+    float speed_mul = (float)dt / 1000.f;
+
+    if (inputs[INPUT_SHIFT]) {
+        speed_mul *= PLAYER_SHIFT_SPEED_MUL;
+    }
 
     if (inputs[INPUT_LEFT]) {
         player.x -= PLAYER_SPEED * speed_mul;
