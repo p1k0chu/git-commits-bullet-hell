@@ -3,8 +3,11 @@
 #include "enemy.h"
 #include "font.h"
 #include "heart.h"
+#include "math.h"
 #include "player.h"
 #include "version.h"
+
+#include <SDL3/SDL_init.h>
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
@@ -95,6 +98,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     load_png_file(heart_png, heart_png_len, player_texture);
     load_png_file(broken_heart_png, broken_heart_png_len, dead_player_texture);
 
+    SDL_GetTextureSize(player_texture, &player.w, &player.h);
+
     SDL_SetRenderVSync(renderer, 1);
 
     int   git_pipe[2];
@@ -175,6 +180,26 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     (void)appstate;
 
+    const float scale = 1.0f;
+    SDL_SetRenderScale(renderer, scale, scale);
+
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
+    SDL_RenderClear(renderer);
+
+    SDL_FRect dst = {};
+
+    if (!player.alive) {
+        SDL_GetTextureSize(dead_player_texture, &dst.w, &dst.h);
+
+        dst.x = player.x / scale - dst.w / 2;
+        dst.y = player.y / scale - dst.h / 2;
+
+        SDL_RenderTexture(renderer, dead_player_texture, NULL, &dst);
+        SDL_RenderPresent(renderer);
+
+        return SDL_APP_CONTINUE;
+    }
+
     static unsigned long last_ms = 0;
 
     unsigned long ms = SDL_GetTicks();
@@ -204,6 +229,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     int w, h;
     SDL_GetRenderOutputSize(renderer, &w, &h);
 
+    SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
+
     for (size_t i = 0; i < alive_enemies; ++i) {
         Enemy *enemy = enemies + i;
         enemy->speed *= ENEMY_ACCEL;
@@ -214,6 +241,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
         enemy->rect.x += c * enemy->speed * speed_mul;
         enemy->rect.y += s * enemy->speed * speed_mul;
+
+        if (collide(&player, enemy)) {
+            player.alive = false;
+            return SDL_APP_CONTINUE;
+        }
 
         const float e_w = SDL_fabsf(c * enemy->rect.w + s * enemy->rect.h);
         const float e_h = SDL_fabsf(s * enemy->rect.w + c * enemy->rect.h);
@@ -277,10 +309,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         }
     }
 
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
-    SDL_RenderClear(renderer);
-
-    const float scale = 1.0f;
     SDL_SetRenderScale(renderer, scale, scale);
 
     for (size_t i = 0; i < alive_enemies; ++i) {
@@ -302,14 +330,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                                  SDL_FLIP_NONE);
     }
 
-    const float player_scale = 4.0f;
-    SDL_SetRenderScale(renderer, player_scale, player_scale);
-
-    SDL_FRect dst;
+    SDL_SetRenderScale(renderer, scale, scale);
 
     SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
-    dst.x = player.x / player_scale - dst.w / 2;
-    dst.y = player.y / player_scale - dst.h / 2;
+    dst.x = player.x - dst.w / 2;
+    dst.y = player.y - dst.h / 2;
 
     SDL_RenderTexture(renderer, player_texture, NULL, &dst);
 

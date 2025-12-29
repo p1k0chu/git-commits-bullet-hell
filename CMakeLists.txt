@@ -53,6 +53,7 @@ add_executable(main main.c)
 target_sources(main PRIVATE
     buffer.c
     utils.c
+    math.c
     font.h
     heart.h
     broken_heart.h
@@ -61,6 +62,7 @@ target_link_libraries(main PRIVATE
     SDL3
     SDL3_ttf
     SDL3_image
+    m
 )
 target_include_directories(main PRIVATE ${CMAKE_BINARY_DIR})
 

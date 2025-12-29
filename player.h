@@ -8,6 +8,7 @@
 typedef struct Player {
     float x;
     float y;
+    float w, h;
     bool  alive;
 } Player;
 
