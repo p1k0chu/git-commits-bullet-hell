@@ -49,8 +49,8 @@ add_custom_command(
     DEPENDS assets/broken_heart.png
 )
 
-add_executable(main main.c)
-target_sources(main PRIVATE
+add_executable(git-commits-bullet-hell main.c)
+target_sources(git-commits-bullet-hell PRIVATE
     buffer.c
     utils.c
     math.c
@@ -58,11 +58,11 @@ target_sources(main PRIVATE
     heart.h
     broken_heart.h
 )
-target_link_libraries(main PRIVATE
+target_link_libraries(git-commits-bullet-hell PRIVATE
     SDL3
     SDL3_ttf
     SDL3_image
     m
 )
-target_include_directories(main PRIVATE ${CMAKE_BINARY_DIR})
+target_include_directories(git-commits-bullet-hell PRIVATE ${CMAKE_BINARY_DIR})
 
