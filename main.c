@@ -183,9 +183,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     (void)appstate;
 
-    const float scale = 1.0f;
-    SDL_SetRenderScale(renderer, scale, scale);
-
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
     SDL_RenderClear(renderer);
 
@@ -312,8 +309,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         }
     }
 
-    SDL_SetRenderScale(renderer, scale, scale);
-
     for (size_t i = 0; i < alive_enemies; ++i) {
         Enemy *enemy = enemies + i;
 
@@ -332,8 +327,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                                  NULL,
                                  SDL_FLIP_NONE);
     }
-
-    SDL_SetRenderScale(renderer, scale, scale);
 
     SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
     dst.x = player.x - dst.w / 2;
