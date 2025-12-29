@@ -7,8 +7,8 @@
 
 typedef struct Enemy {
     SDL_Texture *texture;
-    SDL_FRect rect;
-    float speed;
-    float rotation;
+    SDL_FRect    rect;
+    float        speed;
+    float        rotation;
 } Enemy;
 
