@@ -215,13 +215,16 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         enemy->rect.x += c * enemy->speed * speed_mul;
         enemy->rect.y += s * enemy->speed * speed_mul;
 
-        const float e_w = SDL_fabsf(c * enemy->rect.w);
-        const float e_h = SDL_fabsf(s * enemy->rect.w);
+        const float e_w = SDL_fabsf(c * enemy->rect.w + s * enemy->rect.h);
+        const float e_h = SDL_fabsf(s * enemy->rect.w + c * enemy->rect.h);
 
-        const float e_l = enemy->rect.x;
+        const float e_center_x = enemy->rect.x + enemy->rect.w / 2;
+        const float e_center_y = enemy->rect.y + enemy->rect.h / 2;
+
+        const float e_l = e_center_x - e_w / 2;
         const float e_r = e_l + e_w;
 
-        const float e_t = enemy->rect.y;
+        const float e_t = e_center_y - e_h / 2;
         const float e_b = e_t + e_h;
 
         if (e_r < 0 || e_l > w || e_b < 0 || e_t > h) {
