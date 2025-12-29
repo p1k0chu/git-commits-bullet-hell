@@ -29,6 +29,7 @@ message(STATUS "${PROJECT_NAME} version: ${PROJECT_VERSION}")
 
 find_package(SDL3 REQUIRED)
 find_package(SDL3_ttf REQUIRED)
+find_package(SDL3_image REQUIRED)
 
 configure_file(version.h.in version.h)
 
@@ -59,6 +60,7 @@ target_sources(main PRIVATE
 target_link_libraries(main PRIVATE
     SDL3
     SDL3_ttf
+    SDL3_image
 )
 target_include_directories(main PRIVATE ${CMAKE_BINARY_DIR})
 
