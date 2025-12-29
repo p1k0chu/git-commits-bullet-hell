@@ -303,10 +303,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     SDL_SetRenderScale(renderer, player_scale, player_scale);
 
     SDL_FRect dst;
-    dst.x = player.x / player_scale;
-    dst.y = player.y / player_scale;
 
     SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
+    dst.x = player.x / player_scale - dst.w / 2;
+    dst.y = player.y / player_scale - dst.h / 2;
+
     SDL_RenderTexture(renderer, player_texture, NULL, &dst);
 
     SDL_RenderPresent(renderer);
