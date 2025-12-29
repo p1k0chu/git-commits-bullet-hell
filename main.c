@@ -296,8 +296,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                                &enemies[alive_enemies].rect.w,
                                &enemies[alive_enemies].rect.h);
 
-            enemies[alive_enemies].rect.x = (float)w / 2.0f - enemies[alive_enemies].rect.w / 2.0f;
-            enemies[alive_enemies].rect.y = (float)h / 2.0f - enemies[alive_enemies].rect.h / 2.0f;
+            enemies[alive_enemies].rect.x = w - enemies[alive_enemies].rect.w;
+            enemies[alive_enemies].rect.y = 0;
 
             const float radian = SDL_atan2f(
                 player.y - (enemies[alive_enemies].rect.y + enemies[alive_enemies].rect.h / 2.0f),
