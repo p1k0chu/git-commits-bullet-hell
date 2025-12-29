@@ -191,8 +191,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     if (!player.alive) {
         SDL_GetTextureSize(dead_player_texture, &dst.w, &dst.h);
 
-        dst.x = player.x / scale - dst.w / 2;
-        dst.y = player.y / scale - dst.h / 2;
+        dst.x = player.x - dst.w / 2;
+        dst.y = player.y - dst.h / 2;
 
         SDL_RenderTexture(renderer, dead_player_texture, NULL, &dst);
         SDL_RenderPresent(renderer);
