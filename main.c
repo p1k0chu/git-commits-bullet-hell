@@ -1,5 +1,6 @@
 #include "broken_heart.h"
 #include "buffer.h"
+#include "enemy.h"
 #include "font.h"
 #include "heart.h"
 #include "player.h"
@@ -11,6 +12,7 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -54,13 +56,14 @@ static SDL_Renderer *renderer = NULL;
 
 static TTF_Font *font = NULL;
 
-static SDL_Texture *text                = NULL;
 static SDL_Texture *player_texture      = NULL;
 static SDL_Texture *dead_player_texture = NULL;
 
-static bool next_commit = true;
+static Player player        = {.alive = true};
+static Enemy  enemies[3]    = {0};
+static size_t alive_enemies = 0;
 
-static Player player = {.alive = true};
+static bool has_more_commits = true;
 
 enum Inputs { INPUT_LEFT, INPUT_RIGHT, INPUT_UP, INPUT_DOWN, INPUT_SHIFT };
 static bool inputs[5];
@@ -127,9 +130,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         return SDL_APP_SUCCESS;
     case SDL_EVENT_KEY_DOWN:
         switch (event->key.key) {
-        case SDLK_SPACE:
-            if (!event->key.repeat) next_commit = true;
-            break;
         case SDLK_ESCAPE:
             return SDL_APP_SUCCESS;
         case SDLK_LEFT:
@@ -199,46 +199,106 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         player.y += PLAYER_SPEED * speed_mul;
     }
 
-    if (next_commit) {
-        next_commit = false;
+    speed_mul = (float)dt / 1000.f;
 
-        char *line;
-        if (!(line = Buffer_get_line(&buffer))) die("Buffer_get_line");
+    int w, h;
+    SDL_GetRenderOutputSize(renderer, &w, &h);
 
-        if (line[0] == 0) return SDL_APP_SUCCESS;
+    for (size_t i = 0; i < alive_enemies; ++i) {
+        Enemy *enemy = enemies + i;
+        enemy->speed *= ENEMY_ACCEL;
 
-        const SDL_Color white_color = {0xff, 0xff, 0xff, 0xff};
+        const float radian = enemy->rotation * M_PI / 180;
+        const float c      = SDL_cosf(radian);
+        const float s      = SDL_sinf(radian);
 
-        SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, white_color);
-        if (!surface) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
+        enemy->rect.x += c * enemy->speed * speed_mul;
+        enemy->rect.y += s * enemy->speed * speed_mul;
 
-        text = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_DestroySurface(surface);
+        const float e_w = SDL_fabsf(c * enemy->rect.w);
+        const float e_h = SDL_fabsf(s * enemy->rect.w);
 
-        if (!text) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
+        const float e_l = enemy->rect.x;
+        const float e_r = e_l + e_w;
+
+        const float e_t = enemy->rect.y;
+        const float e_b = e_t + e_h;
+
+        if (e_r < 0 || e_l > w || e_b < 0 || e_t > h) {
+            SDL_DestroyTexture(enemies[i].texture);
+            if (i != alive_enemies - 1) {
+                enemies[i] = enemies[alive_enemies - 1];
+            }
+            --alive_enemies;
+        }
     }
+
+    if (has_more_commits && alive_enemies == 0) {
+        for (; alive_enemies < sizeof(enemies) / sizeof(enemies[0]); ++alive_enemies) {
+            char *line;
+            if (!(line = Buffer_get_line(&buffer))) die("Buffer_get_line");
+
+            if (line[0] == 0) {
+                has_more_commits = false;
+                break;
+            }
+
+            enemies[alive_enemies] = (Enemy){
+                .speed    = ENEMY_SPEED,
+                .rotation = SDL_randf() * 360.0f,
+            };
+
+            const SDL_Color white_color = {0xff, 0xff, 0xff, 0xff};
+
+            SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, white_color);
+            if (!surface) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
+
+            enemies[alive_enemies].texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_DestroySurface(surface);
+
+            if (!enemies[alive_enemies].texture) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
+            SDL_GetTextureSize(enemies[alive_enemies].texture,
+                               &enemies[alive_enemies].rect.w,
+                               &enemies[alive_enemies].rect.h);
+
+            enemies[alive_enemies].rect.x = (float)w / 2 - enemies[alive_enemies].rect.w / 2;
+            enemies[alive_enemies].rect.y = (float)h / 2 - enemies[alive_enemies].rect.h / 2;
+
+        }
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
+    SDL_RenderClear(renderer);
 
     const float scale = 1.0f;
     SDL_SetRenderScale(renderer, scale, scale);
 
-    int       w, h;
-    SDL_FRect dst;
+    for (size_t i = 0; i < alive_enemies; ++i) {
+        Enemy *enemy = enemies + i;
 
-    SDL_GetRenderOutputSize(renderer, &w, &h);
-    SDL_GetTextureSize(text, &dst.w, &dst.h);
+        float render_rotation;
+        if (enemy->rotation > 90.0f && enemy->rotation < 270.0f) {
+            render_rotation = enemy->rotation - 180.0f;
+        } else {
+            render_rotation = enemy->rotation;
+        }
 
-    dst.x = ((w / scale) - dst.w) / 2;
-    dst.y = ((h / scale) - dst.h) / 2;
-
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
-    SDL_RenderClear(renderer);
-    SDL_RenderTexture(renderer, text, NULL, &dst);
+        SDL_RenderTextureRotated(renderer,
+                                 enemy->texture,
+                                 NULL,
+                                 &enemy->rect,
+                                 render_rotation,
+                                 NULL,
+                                 SDL_FLIP_NONE);
+    }
 
     SDL_SetRenderScale(renderer, 4.0f, 4.0f);
 
-    SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
+    SDL_FRect dst;
     dst.x = player.x;
     dst.y = player.y;
+
+    SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
     SDL_RenderTexture(renderer, player_texture, NULL, &dst);
 
     SDL_RenderPresent(renderer);
