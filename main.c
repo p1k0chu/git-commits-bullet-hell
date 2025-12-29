@@ -292,11 +292,12 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                                  SDL_FLIP_NONE);
     }
 
-    SDL_SetRenderScale(renderer, 4.0f, 4.0f);
+    const float player_scale = 4.0f;
+    SDL_SetRenderScale(renderer, player_scale, player_scale);
 
     SDL_FRect dst;
-    dst.x = player.x;
-    dst.y = player.y;
+    dst.x = player.x / player_scale;
+    dst.y = player.y / player_scale;
 
     SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
     SDL_RenderTexture(renderer, player_texture, NULL, &dst);
