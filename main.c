@@ -60,7 +60,7 @@ static SDL_Texture *player_texture      = NULL;
 static SDL_Texture *dead_player_texture = NULL;
 
 static Player player        = {.alive = true};
-static Enemy  enemies[3]    = {0};
+static Enemy  enemies[1]    = {0};
 static size_t alive_enemies = 0;
 
 static bool has_more_commits = true;
@@ -244,8 +244,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             }
 
             enemies[alive_enemies] = (Enemy){
-                .speed    = ENEMY_SPEED,
-                .rotation = SDL_randf() * 360.0f,
+                .speed = ENEMY_SPEED,
             };
 
             const SDL_Color white_color = {0xff, 0xff, 0xff, 0xff};
@@ -257,13 +256,20 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             SDL_DestroySurface(surface);
 
             if (!enemies[alive_enemies].texture) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
+
             SDL_GetTextureSize(enemies[alive_enemies].texture,
                                &enemies[alive_enemies].rect.w,
                                &enemies[alive_enemies].rect.h);
 
-            enemies[alive_enemies].rect.x = (float)w / 2 - enemies[alive_enemies].rect.w / 2;
-            enemies[alive_enemies].rect.y = (float)h / 2 - enemies[alive_enemies].rect.h / 2;
+            enemies[alive_enemies].rect.x = (float)w / 2.0f - enemies[alive_enemies].rect.w / 2.0f;
+            enemies[alive_enemies].rect.y = (float)h / 2.0f - enemies[alive_enemies].rect.h / 2.0f;
 
+            const float radian  = SDL_atan2f(player.y - (enemies[alive_enemies].rect.y + enemies[alive_enemies].rect.h / 2.0f),
+                                            player.x - (enemies[alive_enemies].rect.x + enemies[alive_enemies].rect.w / 2.0f));
+            float degrees = radian * 180.0f / (float)M_PI;
+            while(degrees < 0.0f) degrees += 360.0f;
+
+            enemies[alive_enemies].rotation = degrees;
         }
     }
 
