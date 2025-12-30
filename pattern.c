@@ -27,6 +27,8 @@ bool should_spawn_enemies(BulletPatternId id, unsigned long ms) {
         return alive_enemies == 0;
     case SpamTopRight:
         spawn_if_dt_gt(300);
+    case TopDown:
+        spawn_if_dt_gt(200);
     }
     die("enum");
 #undef spawn_if_dt_gt
@@ -38,11 +40,13 @@ bool should_start_next_pattern(BulletPatternId id, unsigned long time_since_patt
         return time_since_pattern_start_ms > 5000;
     case SpamTopRight:
         return time_since_pattern_start_ms > 2000;
+    case TopDown:
+        return false;
     }
     die("enum");
 }
 
-static size_t get_spawn_points(BulletPatternId id, const Vec2d **dst);
+static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst);
 static size_t get_spawn_srcs(BulletPatternId id, const Vec2d **dst);
 static double get_speed(BulletPatternId id);
 static double get_rotation(BulletPatternId id);
@@ -87,6 +91,7 @@ void spawn_enemies(BulletPatternId id) {
 }
 
 static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
+
     switch (id) {
     case Dummy:
         static Vec2d spawns[] = {{WINDOW_WIDTH, 100}, {WINDOW_WIDTH, 300}, {WINDOW_WIDTH, 600}};
@@ -96,6 +101,19 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
         static Vec2d spawns2[] = {{WINDOW_WIDTH, 0}};
         *dst                   = spawns2;
         return size_of_array(spawns2);
+    case TopDown:
+        static Vec2d spawns3[2] = {{0, 0}, {0, 0}};
+        static double counter = 0;
+
+        const double c = cos(counter);
+
+        spawns3[0].x = (double)WINDOW_WIDTH / 2.0 - 100.0 * c;
+        spawns3[1].x = (double)WINDOW_WIDTH / 2.0 + 100.0 * (1 - c);
+        counter += 0.3;
+
+        *dst = spawns3;
+        return size_of_array(spawns3);
+        break;
     }
     die("enum");
 }
@@ -110,6 +128,11 @@ static size_t get_spawn_srcs(BulletPatternId id, const Vec2d **const dst) {
         static Vec2d spawns2[] = {{1, 0}};
         *dst                   = spawns2;
         return size_of_array(spawns2);
+    case TopDown:
+        static Vec2d spawns3[] = {{1, 0}, {0, 0}};
+        *dst                   = spawns3;
+        return size_of_array(spawns3);
+        break;
     }
     die("enum");
 }
@@ -119,6 +142,8 @@ static double get_speed(BulletPatternId id) {
     case Dummy:
     case SpamTopRight:
         return 10;
+    case TopDown:
+        return (double)WINDOW_HEIGHT / 2;
     }
     die("enum");
 }
@@ -127,6 +152,8 @@ static double get_rotation(BulletPatternId id) {
     case Dummy:
     case SpamTopRight:
         return NAN;
+    case TopDown:
+        return 0;
     }
     die("enum");
 }
@@ -135,6 +162,8 @@ static Vec2d get_move_direction(BulletPatternId id) {
     case Dummy:
     case SpamTopRight:
         return (Vec2d){0, 0};
+    case TopDown:
+        return (Vec2d){0, 1};
     }
     die("enum");
 }
@@ -144,6 +173,9 @@ void tick_enemy(BulletPatternId id, Enemy *enemy) {
     case Dummy:
     case SpamTopRight:
         enemy->speed *= 1.1;
+        break;
+    case TopDown:
+        break;
     }
 }
 
