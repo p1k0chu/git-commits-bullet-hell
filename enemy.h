@@ -16,6 +16,9 @@ typedef struct Enemy {
     Vec2f        move_direction; // unit vector
 } Enemy;
 
+void Enemy_get_points(const Enemy *this, Vec2f dst[4]);
+void Enemy_get_normals(const Enemy *this, Vec2f dst[2]);
+
 int  spawn_enemy(Enemy *dst);
 bool collide(Player *player, Enemy *enemy);
 

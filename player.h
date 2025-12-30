@@ -1,5 +1,7 @@
 #pragma once
 
+#include "math.h"
+
 #include <SDL3/SDL_render.h>
 
 #define PLAYER_SPEED           400
@@ -12,4 +14,6 @@ typedef struct Player {
     float w, h;
     bool  alive;
 } Player;
+
+void Player_get_points(const Player *this, Vec2f dst[4]);
 

@@ -35,3 +35,42 @@ float dot_product(const Vec2f *left, const Vec2f *right) {
     return left->x * right->x + left->y * right->y;
 }
 
+bool polygons_collide(const Vec2f *const normals,
+                      const size_t       normals_len,
+                      const Vec2f *const dots_poly1,
+                      const size_t       dots_poly1_len,
+                      const Vec2f *const dots_poly2,
+                      const size_t       dots_poly2_len) {
+    for (size_t i = 0; i < normals_len; ++i) {
+        const Vec2f *normal = normals + i;
+
+        float poly1_min = INFINITY;
+        float poly1_max = -INFINITY;
+
+        for (size_t j = 0; j < dots_poly1_len; ++j) {
+            const Vec2f *point = dots_poly1 + j;
+            const Vec2f  proj  = Vec2f_project_on(point, normal);
+            const float  m     = Vec2f_magnitude(&proj);
+            if (m > poly1_max) poly1_max = m;
+            if (m < poly1_min) poly1_min = m;
+        }
+
+        float poly2_min = INFINITY;
+        float poly2_max = -INFINITY;
+
+        for (size_t j = 0; j < dots_poly2_len; ++j) {
+            const Vec2f *point = dots_poly2 + j;
+            const Vec2f  proj  = Vec2f_project_on(point, normal);
+            const float  m     = Vec2f_magnitude(&proj);
+            if (m > poly2_max) poly2_max = m;
+            if (m < poly2_min) poly2_min = m;
+        }
+
+        if ((poly1_min < poly2_min && poly1_max < poly2_min) ||
+            (poly1_min > poly2_max && poly1_max > poly2_max)) {
+            return false;
+        }
+    }
+    return true;
+}
+
