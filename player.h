@@ -9,11 +9,11 @@
 #define PLAYER_HITBOX_MUL      0.5f
 
 typedef struct Player {
-    float x;
-    float y;
-    float w, h;
-    bool  alive;
+    double x;
+    double y;
+    float  w, h;
+    bool   alive;
 } Player;
 
-void Player_get_points(const Player *this, Vec2f dst[4]);
+void Player_get_points(const Player *this, Vec2d dst[4]);
 

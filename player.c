@@ -1,10 +1,10 @@
 #include "player.h"
 
-void Player_get_points(const Player *this, Vec2f dst[4]) {
-    const float p_l = this->x - this->w / 2;
-    const float p_r = this->x + this->w / 2;
-    const float p_t = this->y - this->h / 2;
-    const float p_b = this->y + this->h / 2;
+void Player_get_points(const Player *this, Vec2d dst[4]) {
+    const double p_l = this->x - this->w / 2;
+    const double p_r = this->x + this->w / 2;
+    const double p_t = this->y - this->h / 2;
+    const double p_b = this->y + this->h / 2;
 
     // top left
     dst[0].x = p_l;

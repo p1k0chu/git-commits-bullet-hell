@@ -2,22 +2,22 @@
 
 #include <stddef.h>
 
-typedef struct Vec2f {
-    float x, y;
-} Vec2f;
+typedef struct Vec2d {
+    double x, y;
+} Vec2d;
 
-float Vec2f_magnitude(const Vec2f *this);
-Vec2f Vec2f_get_normal(const Vec2f *this);
-Vec2f Vec2f_project_on(const Vec2f *this, const Vec2f *other);
-Vec2f Vec2f_rotate(const Vec2f *this, float rotation_radian);
-Vec2f Vec2f_add(const Vec2f *a, const Vec2f *b);
+double Vec2d_magnitude(const Vec2d *this);
+Vec2d  Vec2d_get_normal(const Vec2d *this);
+Vec2d  Vec2d_project_on(const Vec2d *this, const Vec2d *other);
+Vec2d  Vec2d_rotate(const Vec2d *this, double rotation_radian);
+Vec2d  Vec2d_add(const Vec2d *a, const Vec2d *b);
 
-float dot_product(const Vec2f *left, const Vec2f *right);
+double dot_product(const Vec2d *left, const Vec2d *right);
 
-bool polygons_collide(const Vec2f *normals,
+bool polygons_collide(const Vec2d *normals,
                       size_t       normals_len,
-                      const Vec2f *dots_poly1,
+                      const Vec2d *dots_poly1,
                       size_t       dots_poly1_len,
-                      const Vec2f *dots_poly2,
+                      const Vec2d *dots_poly2,
                       size_t       dots_poly2_len);
 

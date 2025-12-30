@@ -203,7 +203,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     unsigned long dt = ms - last_ms;
     last_ms          = ms;
 
-    float speed_mul = (float)dt / 1000.f;
+    double speed_mul = (double)dt / 1000.f;
 
     if (inputs[INPUT_SHIFT] || inputs[INPUT_X]) {
         speed_mul *= PLAYER_SHIFT_SPEED_MUL;
@@ -229,7 +229,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             player.y = WINDOW_HEIGHT - player.h / PLAYER_HITBOX_MUL / 2;
     }
 
-    speed_mul = (float)dt / 1000.f;
+    speed_mul = (double)dt / 1000.f;
 
     SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
 
@@ -245,14 +245,14 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             return SDL_APP_CONTINUE;
         }
 
-        Vec2f normals[4] = {{1, 0}, {0, 1}};
+        Vec2d normals[4] = {{1, 0}, {0, 1}};
         Enemy_get_normals(enemy, normals + 2);
 
-        static const Vec2f screen_points[4] = {{0, 0},
-                                        {WINDOW_WIDTH, 0},
-                                        {0, WINDOW_HEIGHT},
-                                        {WINDOW_WIDTH, WINDOW_HEIGHT}};
-        Vec2f       enemy_points[4];
+        static const Vec2d screen_points[4] = {{0, 0},
+                                               {WINDOW_WIDTH, 0},
+                                               {0, WINDOW_HEIGHT},
+                                               {WINDOW_WIDTH, WINDOW_HEIGHT}};
+        Vec2d              enemy_points[4];
         Enemy_get_points(enemy, enemy_points);
 
         if (!polygons_collide(normals, 4, enemy_points, 4, screen_points, 4)) {
