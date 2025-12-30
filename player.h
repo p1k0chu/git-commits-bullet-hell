@@ -4,6 +4,7 @@
 
 #define PLAYER_SPEED           400
 #define PLAYER_SHIFT_SPEED_MUL .3f
+#define PLAYER_HITBOX_MUL      0.5f
 
 typedef struct Player {
     float x;

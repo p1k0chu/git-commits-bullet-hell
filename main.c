@@ -85,6 +85,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     load_png_file(broken_heart_png, broken_heart_png_len, dead_player_texture);
 
     SDL_GetTextureSize(player_texture, &player.w, &player.h);
+    player.w *= PLAYER_HITBOX_MUL;
+    player.h *= PLAYER_HITBOX_MUL;
 
     SDL_SetRenderVSync(renderer, 1);
     SDL_SetRenderLogicalPresentation(renderer,
@@ -207,18 +209,22 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     if (inputs[INPUT_LEFT]) {
         player.x -= PLAYER_SPEED * speed_mul;
-        if (player.x < player.w / 2) player.x = player.w / 2;
+        if (player.x < player.w / PLAYER_HITBOX_MUL / 2)
+            player.x = player.w / PLAYER_HITBOX_MUL / 2;
     } else if (inputs[INPUT_RIGHT]) {
         player.x += PLAYER_SPEED * speed_mul;
-        if (player.x > WINDOW_WIDTH - player.w / 2) player.x = WINDOW_WIDTH - player.w / 2;
+        if (player.x > WINDOW_WIDTH - player.w / PLAYER_HITBOX_MUL / 2)
+            player.x = WINDOW_WIDTH - player.w / PLAYER_HITBOX_MUL / 2;
     }
 
     if (inputs[INPUT_UP]) {
         player.y -= PLAYER_SPEED * speed_mul;
-        if (player.y < player.h / 2) player.y = player.h / 2;
+        if (player.y < player.h / PLAYER_HITBOX_MUL / 2)
+            player.y = player.h / PLAYER_HITBOX_MUL / 2;
     } else if (inputs[INPUT_DOWN]) {
         player.y += PLAYER_SPEED * speed_mul;
-        if (player.y > WINDOW_HEIGHT - player.h / 2) player.y = WINDOW_HEIGHT - player.h / 2;
+        if (player.y > WINDOW_HEIGHT - player.h / PLAYER_HITBOX_MUL / 2)
+            player.y = WINDOW_HEIGHT - player.h / PLAYER_HITBOX_MUL / 2;
     }
 
     speed_mul = (float)dt / 1000.f;
