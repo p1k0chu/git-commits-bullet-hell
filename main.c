@@ -98,6 +98,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     load_png_file(broken_heart_png, broken_heart_png_len, dead_player_texture);
 
     SDL_GetTextureSize(player_texture, &player.w, &player.h);
+    player.x = (double)WINDOW_WIDTH / 2;
+    player.y = (double)WINDOW_HEIGHT / 2;
     player.w *= PLAYER_HITBOX_MUL;
     player.h *= PLAYER_HITBOX_MUL;
 
