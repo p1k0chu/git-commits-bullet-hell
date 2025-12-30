@@ -9,7 +9,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int spawn_enemy(Enemy *dst) {
+int spawn_enemy(Enemy *const    dst,
+                const Vec2d     spawn,
+                const Vec2d     spawn_src,
+                const double    speed,
+                const SDL_Color color,
+                double          rotation,
+                const Vec2d     move_direction) {
     if (!has_more_commits) return false;
 
     char *line;
@@ -20,11 +26,9 @@ int spawn_enemy(Enemy *dst) {
         return true;
     }
 
-    dst->speed = ENEMY_SPEED;
+    dst->speed = speed;
 
-    const SDL_Color white_color = {0xff, 0xff, 0xff, 0xff};
-
-    SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, white_color);
+    SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, color);
     if (!surface) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
 
     dst->texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -34,21 +38,33 @@ int spawn_enemy(Enemy *dst) {
 
     SDL_GetTextureSize(dst->texture, &dst->rect.w, &dst->rect.h);
 
-    dst->rect.x = WINDOW_WIDTH - dst->rect.w;
-    dst->rect.y = 0;
+    dst->rect.x = spawn.x - dst->rect.w * spawn_src.x;
+    dst->rect.y = spawn.y - dst->rect.h * spawn_src.y;
 
-    const double radian  = SDL_atan2(player.y - (dst->rect.y + dst->rect.h / 2.0),
-                                    player.x - (dst->rect.x + dst->rect.w / 2.0));
-    double       degrees = radian * 180.0 / (double)M_PI;
-    while (degrees < 0.0) degrees += 360.0;
+    double radian = NAN;
+    if (isnan(rotation)) {
+        radian = SDL_atan2(player.y - (dst->rect.y + dst->rect.h / 2.0),
+                           player.x - (dst->rect.x + dst->rect.w / 2.0));
 
-    if (degrees > 90.0 && degrees < 270.0) {
-        degrees -= 180.0;
+        rotation = radian * 180.0 / (double)M_PI;
     }
-    dst->rotation = degrees;
 
-    dst->move_direction.x = cos(radian);
-    dst->move_direction.y = sin(radian);
+    while (rotation < 0.0) rotation += 360.0;
+    if (rotation > 90.0 && rotation < 270.0) {
+        rotation -= 180.0;
+    }
+    dst->rotation = rotation;
+
+    if (move_direction.x == 0 && move_direction.y == 0) {
+        if (isnan(radian)) {
+            radian = SDL_atan2(player.y - (dst->rect.y + dst->rect.h / 2.0),
+                               player.x - (dst->rect.x + dst->rect.w / 2.0));
+        }
+        dst->move_direction.x = cos(radian);
+        dst->move_direction.y = sin(radian);
+    } else {
+        dst->move_direction = move_direction;
+    }
 
     return true;
 }
