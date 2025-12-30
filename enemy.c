@@ -9,13 +9,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int spawn_enemy(Enemy *const    dst,
-                const Vec2d     spawn,
-                const Vec2d     spawn_src,
-                const double    speed,
-                const SDL_Color color,
-                double          rotation,
-                const Vec2d     move_direction) {
+int spawn_enemy(Enemy *const       dst,
+                const Vec2d        spawn,
+                const Vec2d        spawn_src,
+                const double       speed,
+                const SDL_Color    color,
+                double             rotation,
+                const Vec2d        move_direction,
+                const unsigned int pattern_id) {
     if (!has_more_commits) return false;
 
     char *line;
@@ -27,6 +28,7 @@ int spawn_enemy(Enemy *const    dst,
     }
 
     dst->speed = speed;
+    dst->pattern_id = pattern_id;
 
     SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, color);
     if (!surface) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");

@@ -78,7 +78,8 @@ void spawn_enemies(BulletPatternId id) {
                          speed,
                          SDL_COLOR_WHITE,
                          rotation,
-                         move_direction)) {
+                         move_direction,
+                         id)) {
             break;
         }
         if (j < spawn_srcs_len - 1) ++j;

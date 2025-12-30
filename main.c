@@ -256,7 +256,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
         for (size_t i = 0; i < alive_enemies; ++i) {
             Enemy *enemy = enemies + i;
-            tick_enemy(pattern_id, enemy);
+            tick_enemy(enemy->pattern_id, enemy);
 
             enemy->rect.x += enemy->move_direction.x * enemy->speed * speed_mul;
             enemy->rect.y += enemy->move_direction.y * enemy->speed * speed_mul;
