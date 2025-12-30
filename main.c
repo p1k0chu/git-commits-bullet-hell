@@ -11,8 +11,6 @@
 #include "utils.h"
 #include "version.h"
 
-#include <math.h>
-
 #define SDL_MAIN_USE_CALLBACKS 1
 
 #include <SDL3/SDL.h>
@@ -59,8 +57,6 @@ size_t alive_enemies = 0;
 bool has_more_commits = true;
 
 bool inputs[INPUTS_SIZE];
-
-static const SDL_Color SDL_COLOR_WHITE = {0xff, 0xff, 0xff, 0xff};
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -287,19 +283,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             if (!ptr) die("realloc");
             enemies = ptr;
         }
-        const bool bl = spawn_enemy(enemies + (alive_enemies++),
-                                    (Vec2d){WINDOW_WIDTH, 0},
-                                    (Vec2d){1, 0},
-                                    ENEMY_SPEED,
-                                    SDL_COLOR_WHITE,
-                                    NAN,
-                                    (Vec2d){0, 0});
-
-#ifndef NDEBUG
-        fprintf(stderr, "spawned enemy: %d, total: %ld/%ld\n", bl, alive_enemies, enemies_len);
-#else
-        (void)bl;
-#endif
+        spawn_enemies(pattern_id);
     }
 
     for (size_t i = 0; i < alive_enemies; ++i) {
