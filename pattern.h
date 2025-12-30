@@ -2,7 +2,7 @@
 
 typedef enum BulletPatternId {
     Dummy,
-    Dummy2,
+    SpamTopRight,
 } BulletPatternId;
 
 #define BULLET_PATTERN_ID_LEN 2
