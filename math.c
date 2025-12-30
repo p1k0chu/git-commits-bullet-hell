@@ -49,7 +49,7 @@ double Vec2d_scalar_projection(const Vec2d *this, const Vec2d *onto) {
 
     assert(angle <= M_PI);
 
-    const Vec2d  proj  = Vec2d_project_on(this, onto);
+    const Vec2d  proj = Vec2d_project_on(this, onto);
     const double sign = (angle <= M_PI_2) ? 1 : -1;
     return sign * Vec2d_magnitude(&proj);
 }
