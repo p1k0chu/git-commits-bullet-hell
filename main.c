@@ -79,7 +79,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     if (!TTF_Init()) sdl_die("Couldn't initialize SDL3_ttf: %s\n");
 
-    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 30.0f)))
+    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 30.0)))
         sdl_die("Couldn't open font: %s\n");
 
     load_png_file(heart_png, heart_png_len, player_texture);

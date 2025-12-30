@@ -37,13 +37,13 @@ int spawn_enemy(Enemy *dst) {
     dst->rect.x = WINDOW_WIDTH - dst->rect.w;
     dst->rect.y = 0;
 
-    const double radian  = SDL_atan2(player.y - (dst->rect.y + dst->rect.h / 2.0f),
-                                    player.x - (dst->rect.x + dst->rect.w / 2.0f));
-    double       degrees = radian * 180.0f / (double)M_PI;
-    while (degrees < 0.0f) degrees += 360.0f;
+    const double radian  = SDL_atan2(player.y - (dst->rect.y + dst->rect.h / 2.0),
+                                    player.x - (dst->rect.x + dst->rect.w / 2.0));
+    double       degrees = radian * 180.0 / (double)M_PI;
+    while (degrees < 0.0) degrees += 360.0;
 
-    if (degrees > 90.0f && degrees < 270.0f) {
-        degrees -= 180.0f;
+    if (degrees > 90.0 && degrees < 270.0) {
+        degrees -= 180.0;
     }
     dst->rotation = degrees;
 
@@ -71,7 +71,7 @@ bool collide(Player *player, Enemy *enemy) {
 
 void Enemy_get_points(const Enemy *this, Vec2d dst[4]) {
     const Vec2d  e_center = {this->rect.x + this->rect.w / 2, this->rect.y + this->rect.h / 2};
-    const double rad      = this->rotation * M_PI / 180.0f;
+    const double rad      = this->rotation * M_PI / 180.0;
 
     // top left
     Vec2d tmp = {-this->rect.w / 2, -this->rect.h / 2};
@@ -98,7 +98,7 @@ void Enemy_get_points(const Enemy *this, Vec2d dst[4]) {
 }
 
 void Enemy_get_normals(const Enemy *this, Vec2d dst[2]) {
-    double rad = this->rotation * M_PI / 180.0f;
+    double rad = this->rotation * M_PI / 180.0;
     dst[0].x   = cos(rad);
     dst[0].y   = sin(rad);
 
