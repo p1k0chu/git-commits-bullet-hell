@@ -32,16 +32,16 @@ int spawn_enemy(Enemy *dst) {
 
     if (!dst->texture) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
 
-    SDL_GetTextureSize(enemies[alive_enemies].texture,
-                       &enemies[alive_enemies].rect.w,
-                       &enemies[alive_enemies].rect.h);
+    SDL_GetTextureSize(dst->texture,
+                       &dst->rect.w,
+                       &dst->rect.h);
 
-    enemies[alive_enemies].rect.x = WINDOW_WIDTH - enemies[alive_enemies].rect.w;
-    enemies[alive_enemies].rect.y = 0;
+    dst->rect.x = WINDOW_WIDTH - dst->rect.w;
+    dst->rect.y = 0;
 
     const float radian = SDL_atan2f(
-        player.y - (enemies[alive_enemies].rect.y + enemies[alive_enemies].rect.h / 2.0f),
-        player.x - (enemies[alive_enemies].rect.x + enemies[alive_enemies].rect.w / 2.0f));
+        player.y - (dst->rect.y + dst->rect.h / 2.0f),
+        player.x - (dst->rect.x + dst->rect.w / 2.0f));
     float degrees = radian * 180.0f / (float)M_PI;
     while (degrees < 0.0f) degrees += 360.0f;
 
