@@ -57,6 +57,9 @@ size_t alive_enemies = 0;
 bool has_more_commits = true;
 
 bool inputs[INPUTS_SIZE];
+bool started = false;
+
+static SDL_Texture *start_hint = NULL;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -81,6 +84,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 30.0)))
         sdl_die("Couldn't open font: %s\n");
+
+    SDL_Surface *surface;
+    if (!(surface = TTF_RenderText_Blended(font,
+                                           "Ready? Press [Z] to start.",
+                                           0,
+                                           (SDL_Color){0xff, 0xff, 0xff, 0xff})))
+        sdl_die("couldn't render text: %s\n");
+    if (!(start_hint = SDL_CreateTextureFromSurface(renderer, surface)))
+        sdl_die("couldn't create text texture: %s\n");
 
     load_png_file(heart_png, heart_png_len, player_texture);
     load_png_file(broken_heart_png, broken_heart_png_len, dead_player_texture);
@@ -148,6 +160,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             break;
         case SDLK_X:
             inputs[INPUT_X] = 1;
+            break;
+        case SDLK_Z:
+            started = true;
             break;
         }
         break;
@@ -229,55 +244,62 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             player.y = WINDOW_HEIGHT - player.h / PLAYER_HITBOX_MUL / 2;
     }
 
-    speed_mul = (double)dt / 1000.f;
+    if (started) {
+        speed_mul = (double)dt / 1000.f;
 
-    SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
+        SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
 
-    for (size_t i = 0; i < alive_enemies; ++i) {
-        Enemy *enemy = enemies + i;
-        enemy->speed *= ENEMY_ACCEL;
+        for (size_t i = 0; i < alive_enemies; ++i) {
+            Enemy *enemy = enemies + i;
+            enemy->speed *= ENEMY_ACCEL;
 
-        enemy->rect.x += enemy->move_direction.x * enemy->speed * speed_mul;
-        enemy->rect.y += enemy->move_direction.y * enemy->speed * speed_mul;
+            enemy->rect.x += enemy->move_direction.x * enemy->speed * speed_mul;
+            enemy->rect.y += enemy->move_direction.y * enemy->speed * speed_mul;
 
-        if (collide(&player, enemy)) {
-            player.alive = false;
-            return SDL_APP_CONTINUE;
-        }
-
-        Vec2d normals[4] = {{1, 0}, {0, 1}};
-        Enemy_get_normals(enemy, normals + 2);
-
-        static const Vec2d screen_points[4] = {{0, 0},
-                                               {WINDOW_WIDTH, 0},
-                                               {0, WINDOW_HEIGHT},
-                                               {WINDOW_WIDTH, WINDOW_HEIGHT}};
-        Vec2d              enemy_points[4];
-        Enemy_get_points(enemy, enemy_points);
-
-        if (!polygons_collide(normals, 4, enemy_points, 4, screen_points, 4)) {
-            SDL_DestroyTexture(enemies[i].texture);
-            if (i != alive_enemies - 1) {
-                enemies[i] = enemies[alive_enemies - 1];
+            if (collide(&player, enemy)) {
+                player.alive = false;
+                return SDL_APP_CONTINUE;
             }
-            --alive_enemies;
+
+            Vec2d normals[4] = {{1, 0}, {0, 1}};
+            Enemy_get_normals(enemy, normals + 2);
+
+            static const Vec2d screen_points[4] = {{0, 0},
+                                                   {WINDOW_WIDTH, 0},
+                                                   {0, WINDOW_HEIGHT},
+                                                   {WINDOW_WIDTH, WINDOW_HEIGHT}};
+            Vec2d              enemy_points[4];
+            Enemy_get_points(enemy, enemy_points);
+
+            if (!polygons_collide(normals, 4, enemy_points, 4, screen_points, 4)) {
+                SDL_DestroyTexture(enemies[i].texture);
+                if (i != alive_enemies - 1) {
+                    enemies[i] = enemies[alive_enemies - 1];
+                }
+                --alive_enemies;
+            }
         }
-    }
 
-    static BulletPatternId pattern_id       = Dummy;
-    static unsigned long   pattern_start_ms = 0;
+        static BulletPatternId pattern_id       = Dummy;
+        static unsigned long   pattern_start_ms = 0;
 
-    if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
-        pattern_id       = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
-        pattern_start_ms = ms;
+        if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
+            pattern_id       = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
+            pattern_start_ms = ms;
 
 #ifndef NDEBUG
-        fprintf(stderr, "starting next pattern\n");
+            fprintf(stderr, "starting next pattern\n");
 #endif
-    }
+        }
 
-    if (should_spawn_enemies(pattern_id, ms)) {
-        spawn_enemies(pattern_id);
+        if (should_spawn_enemies(pattern_id, ms)) {
+            spawn_enemies(pattern_id);
+        }
+    } else {
+        SDL_GetTextureSize(start_hint, &dst.w, &dst.h);
+        dst.x = (WINDOW_WIDTH - dst.w) / 2;
+        dst.y = 0;
+        SDL_RenderTexture(renderer, start_hint, NULL, &dst);
     }
 
     for (size_t i = 0; i < alive_enemies; ++i) {

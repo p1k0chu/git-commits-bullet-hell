@@ -37,4 +37,5 @@ extern size_t alive_enemies;
 extern bool has_more_commits;
 
 extern bool inputs[INPUTS_SIZE];
+extern bool started;
 
