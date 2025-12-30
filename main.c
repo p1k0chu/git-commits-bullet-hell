@@ -142,6 +142,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDLK_LSHIFT:
             inputs[INPUT_SHIFT] = 1;
             break;
+        case SDLK_X:
+            inputs[INPUT_X] = 1;
+            break;
         }
         break;
     case SDL_EVENT_KEY_UP:
@@ -160,6 +163,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             break;
         case SDLK_LSHIFT:
             inputs[INPUT_SHIFT] = 0;
+            break;
+        case SDLK_X:
+            inputs[INPUT_X] = 0;
             break;
         }
     }
@@ -195,7 +201,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     float speed_mul = (float)dt / 1000.f;
 
-    if (inputs[INPUT_SHIFT]) {
+    if (inputs[INPUT_SHIFT] || inputs[INPUT_X]) {
         speed_mul *= PLAYER_SHIFT_SPEED_MUL;
     }
 

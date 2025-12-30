@@ -3,6 +3,13 @@
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
 
-enum Inputs { INPUT_LEFT, INPUT_RIGHT, INPUT_UP, INPUT_DOWN, INPUT_SHIFT };
-#define INPUTS_SIZE 5
+enum Inputs {
+    INPUT_LEFT,
+    INPUT_RIGHT,
+    INPUT_UP,
+    INPUT_DOWN,
+    INPUT_SHIFT,
+    INPUT_X,
+};
+#define INPUTS_SIZE 6
 
