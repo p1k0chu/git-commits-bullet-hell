@@ -103,7 +103,7 @@ void Enemy_get_normals(const Enemy *this, Vec2f dst[2]) {
     dst[0].y  = sinf(rad);
 
     rad += M_PI_2;
-    dst[0].x = cosf(rad);
-    dst[0].y = sinf(rad);
+    dst[1].x = cosf(rad);
+    dst[1].y = sinf(rad);
 }
 
