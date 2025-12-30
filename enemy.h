@@ -12,3 +12,5 @@ typedef struct Enemy {
     float        rotation;
 } Enemy;
 
+int spawn_enemy(Enemy *dst);
+
