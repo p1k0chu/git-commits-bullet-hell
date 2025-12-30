@@ -39,23 +39,23 @@
         SDL_DestroySurface(surface);                                    \
     }
 
-static Buffer buffer = {0};
+Buffer buffer = {0};
 
-static SDL_Window   *window   = NULL;
-static SDL_Renderer *renderer = NULL;
+SDL_Window   *window   = NULL;
+SDL_Renderer *renderer = NULL;
 
-static TTF_Font *font = NULL;
+TTF_Font *font = NULL;
 
-static SDL_Texture *player_texture      = NULL;
-static SDL_Texture *dead_player_texture = NULL;
+SDL_Texture *player_texture      = NULL;
+SDL_Texture *dead_player_texture = NULL;
 
-static Player player        = {.alive = true};
-static Enemy  enemies[1]    = {0};
-static size_t alive_enemies = 0;
+Player player        = {.alive = true};
+Enemy  enemies[1]    = {0};
+size_t alive_enemies = 0;
 
-static bool has_more_commits = true;
+bool has_more_commits = true;
 
-static bool inputs[INPUTS_SIZE];
+bool inputs[INPUTS_SIZE];
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
