@@ -45,7 +45,13 @@ int spawn_enemy(Enemy *dst) {
     float degrees = radian * 180.0f / (float)M_PI;
     while (degrees < 0.0f) degrees += 360.0f;
 
+    if (degrees > 90.0f && degrees < 270.0f) {
+        degrees -= 180.0f;
+    }
     dst->rotation = degrees;
+
+    dst->move_direction.x = cosf(radian);
+    dst->move_direction.y = sinf(radian);
 
     return true;
 }

@@ -16,7 +16,6 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -235,20 +234,18 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         Enemy *enemy = enemies + i;
         enemy->speed *= ENEMY_ACCEL;
 
-        const float radian = enemy->rotation * M_PI / 180;
-        const float c      = SDL_cosf(radian);
-        const float s      = SDL_sinf(radian);
-
-        enemy->rect.x += c * enemy->speed * speed_mul;
-        enemy->rect.y += s * enemy->speed * speed_mul;
+        enemy->rect.x += enemy->move_direction.x * enemy->speed * speed_mul;
+        enemy->rect.y += enemy->move_direction.y * enemy->speed * speed_mul;
 
         if (collide(&player, enemy)) {
             player.alive = false;
             return SDL_APP_CONTINUE;
         }
 
-        const float e_w = SDL_fabsf(c * enemy->rect.w + s * enemy->rect.h);
-        const float e_h = SDL_fabsf(s * enemy->rect.w + c * enemy->rect.h);
+        const float e_w = SDL_fabsf(enemy->move_direction.x * enemy->rect.w +
+                                    enemy->move_direction.y * enemy->rect.h);
+        const float e_h = SDL_fabsf(enemy->move_direction.y * enemy->rect.w +
+                                    enemy->move_direction.x * enemy->rect.h);
 
         const float e_center_x = enemy->rect.x + enemy->rect.w / 2;
         const float e_center_y = enemy->rect.y + enemy->rect.h / 2;
@@ -279,18 +276,11 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     for (size_t i = 0; i < alive_enemies; ++i) {
         Enemy *enemy = enemies + i;
 
-        float render_rotation;
-        if (enemy->rotation > 90.0f && enemy->rotation < 270.0f) {
-            render_rotation = enemy->rotation - 180.0f;
-        } else {
-            render_rotation = enemy->rotation;
-        }
-
         SDL_RenderTextureRotated(renderer,
                                  enemy->texture,
                                  NULL,
                                  &enemy->rect,
-                                 render_rotation,
+                                 enemy->rotation,
                                  NULL,
                                  SDL_FLIP_NONE);
     }

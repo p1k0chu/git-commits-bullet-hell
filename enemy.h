@@ -1,5 +1,6 @@
 #pragma once
 
+#include "math.h"
 #include "player.h"
 
 #include <SDL3/SDL_render.h>
@@ -11,7 +12,8 @@ typedef struct Enemy {
     SDL_Texture *texture;
     SDL_FRect    rect;
     float        speed;
-    float        rotation;
+    float        rotation;       // hitbox/draw rotation in degrees
+    Vec2f        move_direction; // unit vector
 } Enemy;
 
 int  spawn_enemy(Enemy *dst);
