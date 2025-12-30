@@ -6,6 +6,7 @@
 #include "font.h"
 #include "heart.h"
 #include "math.h"
+#include "pattern.h"
 #include "player.h"
 #include "utils.h"
 #include "version.h"
@@ -49,7 +50,7 @@ SDL_Texture *player_texture      = NULL;
 SDL_Texture *dead_player_texture = NULL;
 
 Player player        = {.alive = true};
-Enemy  enemies[1]    = {0};
+Enemy  enemies[10]   = {};
 size_t alive_enemies = 0;
 
 bool has_more_commits = true;
@@ -266,12 +267,27 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         }
     }
 
-    if (has_more_commits && alive_enemies == 0) {
-        for (; alive_enemies < sizeof(enemies) / sizeof(enemies[0]); ++alive_enemies) {
-            if (!spawn_enemy(enemies + alive_enemies)) {
-                break;
-            }
-        }
+    static BulletPatternId pattern_id       = Dummy;
+    static unsigned long   pattern_start_ms = 0;
+
+    if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
+        pattern_id       = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
+        pattern_start_ms = ms;
+
+#ifndef NDEBUG
+        fprintf(stderr, "starting next pattern\n");
+#endif
+    }
+
+    if (alive_enemies < sizeof(enemies) / sizeof(enemies[0]) &&
+        should_spawn_enemies(pattern_id, ms)) {
+        const bool bl = spawn_enemy(enemies + (alive_enemies++));
+
+#ifndef NDEBUG
+        fprintf(stderr, "spawned enemy: %d, total: %ld\n", bl, alive_enemies);
+#else
+        (void)bl;
+#endif
     }
 
     for (size_t i = 0; i < alive_enemies; ++i) {
