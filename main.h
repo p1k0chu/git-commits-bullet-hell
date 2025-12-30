@@ -30,7 +30,8 @@ extern SDL_Texture *player_texture;
 extern SDL_Texture *dead_player_texture;
 
 extern Player player;
-extern Enemy  enemies[10];
+extern Enemy *enemies;
+extern size_t enemies_len;
 extern size_t alive_enemies;
 
 extern bool has_more_commits;

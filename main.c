@@ -50,7 +50,8 @@ SDL_Texture *player_texture      = NULL;
 SDL_Texture *dead_player_texture = NULL;
 
 Player player        = {.alive = true};
-Enemy  enemies[10]   = {};
+Enemy *enemies       = NULL;
+size_t enemies_len   = 0;
 size_t alive_enemies = 0;
 
 bool has_more_commits = true;
@@ -279,12 +280,17 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 #endif
     }
 
-    if (alive_enemies < sizeof(enemies) / sizeof(enemies[0]) &&
-        should_spawn_enemies(pattern_id, ms)) {
+    if (should_spawn_enemies(pattern_id, ms)) {
+        if (alive_enemies >= enemies_len) {
+            enemies_len = alive_enemies + 2;
+            void *ptr   = realloc(enemies, sizeof(enemies[0]) * enemies_len);
+            if (!ptr) die("realloc");
+            enemies = ptr;
+        }
         const bool bl = spawn_enemy(enemies + (alive_enemies++));
 
 #ifndef NDEBUG
-        fprintf(stderr, "spawned enemy: %d, total: %ld\n", bl, alive_enemies);
+        fprintf(stderr, "spawned enemy: %d, total: %ld/%ld\n", bl, alive_enemies, enemies_len);
 #else
         (void)bl;
 #endif
