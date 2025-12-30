@@ -38,7 +38,7 @@ float dot_product(const Vec2f *left, const Vec2f *right) {
 }
 
 bool collide(Player *player, Enemy *enemy) {
-    const float enemy_rot         = enemy->rotation * M_PI / 180.0f;
+    const float enemy_rot = enemy->rotation * M_PI / 180.0f;
 
     const float enemy_rot_2 = enemy_rot + M_PI_2;
 
