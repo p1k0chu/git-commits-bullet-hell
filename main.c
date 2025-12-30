@@ -61,6 +61,9 @@ bool started = false;
 
 static SDL_Texture *start_hint = NULL;
 
+static BulletPatternId pattern_id       = Dummy;
+static unsigned long   pattern_start_ms = 0;
+
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
     (void)argc;
@@ -253,7 +256,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
         for (size_t i = 0; i < alive_enemies; ++i) {
             Enemy *enemy = enemies + i;
-            enemy->speed *= ENEMY_ACCEL;
+            tick_enemy(pattern_id, enemy);
 
             enemy->rect.x += enemy->move_direction.x * enemy->speed * speed_mul;
             enemy->rect.y += enemy->move_direction.y * enemy->speed * speed_mul;
@@ -281,9 +284,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                 --alive_enemies;
             }
         }
-
-        static BulletPatternId pattern_id       = Dummy;
-        static unsigned long   pattern_start_ms = 0;
 
         if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
             pattern_id       = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;

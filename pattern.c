@@ -11,19 +11,25 @@
 static const SDL_Color SDL_COLOR_WHITE = {0xff, 0xff, 0xff, 0xff};
 
 bool should_spawn_enemies(BulletPatternId id, unsigned long ms) {
+    static unsigned long last_ms = 0;
+
+#define spawn_if_dt_gt(dt)         \
+    {                              \
+        if (ms - last_ms > (dt)) { \
+            last_ms = ms;          \
+            return true;           \
+        }                          \
+        return false;              \
+    }
+
     switch (id) {
     case Dummy:
         return alive_enemies == 0;
     case SpamTopRight:
-        static unsigned long last_ms = 0;
-
-        if (ms - last_ms > 300) {
-            last_ms = ms;
-            return true;
-        }
-        return false;
+        spawn_if_dt_gt(300);
     }
     die("enum");
+#undef spawn_if_dt_gt
 }
 
 bool should_start_next_pattern(BulletPatternId id, unsigned long time_since_pattern_start_ms) {
@@ -31,7 +37,7 @@ bool should_start_next_pattern(BulletPatternId id, unsigned long time_since_patt
     case Dummy:
         return time_since_pattern_start_ms > 5000;
     case SpamTopRight:
-        return false;
+        return time_since_pattern_start_ms > 2000;
     }
     die("enum");
 }
@@ -102,7 +108,7 @@ static double get_speed(BulletPatternId id) {
     switch (id) {
     case Dummy:
     case SpamTopRight:
-        return ENEMY_SPEED;
+        return 10;
     }
     die("enum");
 }
@@ -121,5 +127,13 @@ static Vec2d get_move_direction(BulletPatternId id) {
         return (Vec2d){0, 0};
     }
     die("enum");
+}
+
+void tick_enemy(BulletPatternId id, Enemy *enemy) {
+    switch (id) {
+    case Dummy:
+    case SpamTopRight:
+        enemy->speed *= 1.1;
+    }
 }
 
