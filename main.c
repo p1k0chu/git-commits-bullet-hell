@@ -110,7 +110,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
         close(git_pipe[0]);
         close(git_pipe[1]);
         execlp("git", "git", "log", "--pretty=%s", NULL);
-        exit(0);
+
+        die(__FILE_NAME__ ":" XSTR(__LINE__) ": execlp");
     }
 
     close(git_pipe[1]);
