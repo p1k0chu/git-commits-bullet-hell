@@ -43,7 +43,7 @@ bool should_start_next_pattern(BulletPatternId id, unsigned long time_since_patt
 }
 
 static size_t get_spawn_points(BulletPatternId id, const Vec2d **dst);
-static Vec2d  get_spawn_src(BulletPatternId id);
+static size_t get_spawn_srcs(BulletPatternId id, const Vec2d **dst);
 static double get_speed(BulletPatternId id);
 static double get_rotation(BulletPatternId id);
 static Vec2d  get_move_direction(BulletPatternId id);
@@ -59,24 +59,29 @@ void spawn_enemies(BulletPatternId id) {
         enemies = ptr;
     }
 
-    Vec2d  spawn_src = get_spawn_src(id);
-    double speed     = get_speed(id);
-    double rotation  = get_rotation(id);
+    const Vec2d *spawn_srcs;
+    const size_t spawn_srcs_len = get_spawn_srcs(id, &spawn_srcs);
+
+    double speed    = get_speed(id);
+    double rotation = get_rotation(id);
 
     Vec2d move_direction = get_move_direction(id);
 
+    size_t j = 0;
     for (size_t i = 0; i < spawns_len; ++i) {
-        const Vec2d *spawn = spawns + i;
+        const Vec2d *spawn     = spawns + i;
+        const Vec2d *spawn_src = spawn_srcs + j;
 
         if (!spawn_enemy(enemies + (alive_enemies++),
                          *spawn,
-                         spawn_src,
+                         *spawn_src,
                          speed,
                          SDL_COLOR_WHITE,
                          rotation,
                          move_direction)) {
             break;
         }
+        if (j < spawn_srcs_len - 1) ++j;
     }
 }
 
@@ -94,12 +99,16 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
     die("enum");
 }
 
-static Vec2d get_spawn_src(BulletPatternId id) {
+static size_t get_spawn_srcs(BulletPatternId id, const Vec2d **const dst) {
     switch (id) {
     case Dummy:
-        return (Vec2d){1, 1};
+        static Vec2d spawns[] = {{1, 0.5}};
+        *dst                  = spawns;
+        return size_of_array(spawns);
     case SpamTopRight:
-        return (Vec2d){1, 0};
+        static Vec2d spawns2[] = {{1, 0}};
+        *dst                   = spawns2;
+        return size_of_array(spawns2);
     }
     die("enum");
 }
