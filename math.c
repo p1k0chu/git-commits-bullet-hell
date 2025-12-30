@@ -3,7 +3,7 @@
 #include <math.h>
 
 double Vec2d_magnitude(const Vec2d *this) {
-    return sqrtf(powf(this->x, 2) + powf(this->y, 2));
+    return sqrt(pow(this->x, 2) + pow(this->y, 2));
 }
 
 Vec2d Vec2d_get_normal(const Vec2d *this) {
