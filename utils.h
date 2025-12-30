@@ -16,5 +16,7 @@
 #define STR(s)  #s
 #define XSTR(s) STR(s)
 
+#define size_of_array(arr) (sizeof(arr) / sizeof(arr[0]))
+
 const char *strnchr(const char *s, int c, size_t n);
 

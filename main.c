@@ -277,12 +277,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     }
 
     if (should_spawn_enemies(pattern_id, ms)) {
-        if (alive_enemies >= enemies_len) {
-            enemies_len = alive_enemies + 2;
-            void *ptr   = realloc(enemies, sizeof(enemies[0]) * enemies_len);
-            if (!ptr) die("realloc");
-            enemies = ptr;
-        }
         spawn_enemies(pattern_id);
     }
 
