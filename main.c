@@ -245,21 +245,17 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             return SDL_APP_CONTINUE;
         }
 
-        const float e_w = SDL_fabsf(enemy->move_direction.x * enemy->rect.w +
-                                    enemy->move_direction.y * enemy->rect.h);
-        const float e_h = SDL_fabsf(enemy->move_direction.y * enemy->rect.w +
-                                    enemy->move_direction.x * enemy->rect.h);
+        Vec2f normals[4] = {{1, 0}, {0, 1}};
+        Enemy_get_normals(enemy, normals + 2);
 
-        const float e_center_x = enemy->rect.x + enemy->rect.w / 2;
-        const float e_center_y = enemy->rect.y + enemy->rect.h / 2;
+        const Vec2f screen_points[4] = {{0, 0},
+                                        {WINDOW_WIDTH, 0},
+                                        {0, WINDOW_HEIGHT},
+                                        {WINDOW_WIDTH, WINDOW_HEIGHT}};
+        Vec2f       enemy_points[4];
+        Enemy_get_points(enemy, enemy_points);
 
-        const float e_l = e_center_x - e_w / 2;
-        const float e_r = e_l + e_w;
-
-        const float e_t = e_center_y - e_h / 2;
-        const float e_b = e_t + e_h;
-
-        if (e_r < 0 || e_l > WINDOW_WIDTH || e_b < 0 || e_t > WINDOW_HEIGHT) {
+        if (!polygons_collide(normals, 4, enemy_points, 4, screen_points, 4)) {
             SDL_DestroyTexture(enemies[i].texture);
             if (i != alive_enemies - 1) {
                 enemies[i] = enemies[alive_enemies - 1];
