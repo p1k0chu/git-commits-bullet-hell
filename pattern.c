@@ -76,7 +76,7 @@ void spawn_enemies(BulletPatternId id) {
         const Vec2d *spawn     = spawns + i;
         const Vec2d *spawn_src = spawn_srcs + j;
 
-        if (!spawn_enemy(enemies + (alive_enemies++),
+        if (!spawn_enemy(enemies + alive_enemies,
                          *spawn,
                          *spawn_src,
                          speed,
@@ -86,6 +86,7 @@ void spawn_enemies(BulletPatternId id) {
                          id)) {
             break;
         }
+        ++alive_enemies;
         if (j < spawn_srcs_len - 1) ++j;
     }
 }

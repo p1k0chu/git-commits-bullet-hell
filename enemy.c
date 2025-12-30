@@ -24,7 +24,7 @@ int spawn_enemy(Enemy *const       dst,
 
     if (line[0] == 0) {
         has_more_commits = false;
-        return true;
+        return false;
     }
 
     dst->speed = speed;
