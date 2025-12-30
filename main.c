@@ -248,7 +248,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         Vec2f normals[4] = {{1, 0}, {0, 1}};
         Enemy_get_normals(enemy, normals + 2);
 
-        const Vec2f screen_points[4] = {{0, 0},
+        static const Vec2f screen_points[4] = {{0, 0},
                                         {WINDOW_WIDTH, 0},
                                         {0, WINDOW_HEIGHT},
                                         {WINDOW_WIDTH, WINDOW_HEIGHT}};
