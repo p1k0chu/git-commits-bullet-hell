@@ -7,12 +7,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#define die(s)                      \
-    {                               \
-        fprintf(stderr, "%s\n", s); \
-        exit(1);                    \
-    }
-
 char *Buffer_get_line(Buffer *buffer) {
     // remove old line
     size_t len = strnlen(buffer->buffer_start, buffer->buffer_size);

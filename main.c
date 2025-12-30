@@ -1,3 +1,5 @@
+#include "main.h"
+
 #include "broken_heart.h"
 #include "buffer.h"
 #include "enemy.h"
@@ -5,6 +7,7 @@
 #include "heart.h"
 #include "math.h"
 #include "player.h"
+#include "utils.h"
 #include "version.h"
 
 #define SDL_MAIN_USE_CALLBACKS 1
@@ -18,20 +21,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#define die(s)                      \
-    {                               \
-        fprintf(stderr, "%s\n", s); \
-        exit(1);                    \
-    }
-#define sdl_die(s)                  \
-    {                               \
-        SDL_Log(s, SDL_GetError()); \
-        return SDL_APP_FAILURE;     \
-    }
-
-#define STR(s)  #s
-#define XSTR(s) STR(s)
 
 #define load_png_file(array, size, dst)                                 \
     {                                                                   \
@@ -50,9 +39,6 @@
         SDL_DestroySurface(surface);                                    \
     }
 
-#define WINDOW_WIDTH  1920
-#define WINDOW_HEIGHT 1080
-
 static Buffer buffer = {0};
 
 static SDL_Window   *window   = NULL;
@@ -69,8 +55,7 @@ static size_t alive_enemies = 0;
 
 static bool has_more_commits = true;
 
-enum Inputs { INPUT_LEFT, INPUT_RIGHT, INPUT_UP, INPUT_DOWN, INPUT_SHIFT };
-static bool inputs[5];
+static bool inputs[INPUTS_SIZE];
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
