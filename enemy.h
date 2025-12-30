@@ -1,5 +1,7 @@
 #pragma once
 
+#include "player.h"
+
 #include <SDL3/SDL_render.h>
 
 #define ENEMY_SPEED 10
@@ -12,5 +14,6 @@ typedef struct Enemy {
     float        rotation;
 } Enemy;
 
-int spawn_enemy(Enemy *dst);
+int  spawn_enemy(Enemy *dst);
+bool collide(Player *player, Enemy *enemy);
 
