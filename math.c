@@ -1,6 +1,8 @@
 #include "math.h"
 
+#include <assert.h>
 #include <math.h>
+#include <stdio.h>
 
 double Vec2d_magnitude(const Vec2d *this) {
     return sqrt(pow(this->x, 2) + pow(this->y, 2));
@@ -35,6 +37,23 @@ double dot_product(const Vec2d *left, const Vec2d *right) {
     return left->x * right->x + left->y * right->y;
 }
 
+double Vec2d_angle2(const Vec2d *a, const Vec2d *b) {
+    return acos(dot_product(a, b) / Vec2d_magnitude(a) / Vec2d_magnitude(b));
+}
+
+double Vec2d_scalar_projection(const Vec2d *this, const Vec2d *onto) {
+    const double angle = Vec2d_angle2(this, onto);
+    // if angle is nan, one of the vectors is a zero vector,
+    // thus scalar projection is always 0
+    if (isnan(angle)) return 0;
+
+    assert(angle <= M_PI);
+
+    const Vec2d  proj  = Vec2d_project_on(this, onto);
+    const double sign = (angle <= M_PI_2) ? 1 : -1;
+    return sign * Vec2d_magnitude(&proj);
+}
+
 bool polygons_collide(const Vec2d *const normals,
                       const size_t       normals_len,
                       const Vec2d *const dots_poly1,
@@ -49,8 +68,7 @@ bool polygons_collide(const Vec2d *const normals,
 
         for (size_t j = 0; j < dots_poly1_len; ++j) {
             const Vec2d *point = dots_poly1 + j;
-            const Vec2d  proj  = Vec2d_project_on(point, normal);
-            const double m     = Vec2d_magnitude(&proj);
+            const double m     = Vec2d_scalar_projection(point, normal);
             if (m > poly1_max) poly1_max = m;
             if (m < poly1_min) poly1_min = m;
         }
@@ -60,8 +78,7 @@ bool polygons_collide(const Vec2d *const normals,
 
         for (size_t j = 0; j < dots_poly2_len; ++j) {
             const Vec2d *point = dots_poly2 + j;
-            const Vec2d  proj  = Vec2d_project_on(point, normal);
-            const double m     = Vec2d_magnitude(&proj);
+            const double m     = Vec2d_scalar_projection(point, normal);
             if (m > poly2_max) poly2_max = m;
             if (m < poly2_min) poly2_min = m;
         }
