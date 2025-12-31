@@ -286,6 +286,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         }
 
         if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
+            if (alive_enemies > 0) goto render;
+
             pattern_id       = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
             pattern_start_ms = ms;
 
@@ -304,6 +306,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         SDL_RenderTexture(renderer, start_hint, NULL, &dst);
     }
 
+render:
     for (size_t i = 0; i < alive_enemies; ++i) {
         Enemy *enemy = enemies + i;
 
