@@ -50,7 +50,7 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst);
 static size_t get_spawn_srcs(BulletPatternId id, const Vec2d **dst);
 static double get_speed(BulletPatternId id);
 static double get_rotation(BulletPatternId id);
-static Vec2d  get_move_direction(BulletPatternId id);
+static size_t get_move_direction(BulletPatternId id, const Vec2d **dst);
 
 void spawn_enemies(BulletPatternId id) {
     const Vec2d *spawns;
@@ -69,12 +69,15 @@ void spawn_enemies(BulletPatternId id) {
     double speed    = get_speed(id);
     double rotation = get_rotation(id);
 
-    Vec2d move_direction = get_move_direction(id);
+    const Vec2d *move_directions;
+    const size_t move_directions_len = get_move_direction(id, &move_directions);
 
     size_t j = 0;
+    size_t k = 0;
     for (size_t i = 0; i < spawns_len; ++i) {
-        const Vec2d *spawn     = spawns + i;
-        const Vec2d *spawn_src = spawn_srcs + j;
+        const Vec2d *spawn          = spawns + i;
+        const Vec2d *spawn_src      = spawn_srcs + j;
+        const Vec2d *move_direction = move_directions + k;
 
         if (!spawn_enemy(enemies + alive_enemies,
                          *spawn,
@@ -82,12 +85,13 @@ void spawn_enemies(BulletPatternId id) {
                          speed,
                          SDL_COLOR_WHITE,
                          rotation,
-                         move_direction,
+                         *move_direction,
                          id)) {
             break;
         }
         ++alive_enemies;
         if (j < spawn_srcs_len - 1) ++j;
+        if (k < move_directions_len - 1) ++k;
     }
 }
 
@@ -103,8 +107,8 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
         *dst                   = spawns2;
         return size_of_array(spawns2);
     case TopDown:
-        static Vec2d spawns3[2] = {{0, 0}, {0, 0}};
-        static double counter = 0;
+        static Vec2d  spawns3[2] = {{0, 0}, {0, 0}};
+        static double counter    = 0;
 
         const double c = cos(counter);
 
@@ -158,13 +162,17 @@ static double get_rotation(BulletPatternId id) {
     }
     die("enum");
 }
-static Vec2d get_move_direction(BulletPatternId id) {
+static size_t get_move_direction(BulletPatternId id, const Vec2d **dst) {
     switch (id) {
     case Dummy:
     case SpamTopRight:
-        return (Vec2d){0, 0};
+        static const Vec2d none = {0, 0};
+        *dst             = &none;
+        return 1;
     case TopDown:
-        return (Vec2d){0, 1};
+        static const Vec2d down = {0, 1};
+        *dst = &down;
+        return 1;
     }
     die("enum");
 }
