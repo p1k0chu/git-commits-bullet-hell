@@ -16,10 +16,10 @@ double Vec2d_scalar_projection(const Vec2d *this, const Vec2d *onto);
 
 double dot_product(const Vec2d *left, const Vec2d *right);
 
-bool polygons_collide(const Vec2d *normals,
-                      size_t       normals_len,
-                      const Vec2d *dots_poly1,
-                      size_t       dots_poly1_len,
-                      const Vec2d *dots_poly2,
-                      size_t       dots_poly2_len);
+int polygons_collide(const Vec2d *normals,
+                     size_t       normals_len,
+                     const Vec2d *dots_poly1,
+                     size_t       dots_poly1_len,
+                     const Vec2d *dots_poly2,
+                     size_t       dots_poly2_len);
 

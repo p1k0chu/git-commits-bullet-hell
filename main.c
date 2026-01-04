@@ -20,23 +20,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <unistd.h>
 
-#define load_png_file(array, size, dst)                                 \
-    {                                                                   \
-        SDL_Surface  *surface;                                          \
-        SDL_IOStream *sdl_stream;                                       \
-                                                                        \
-        if (!(sdl_stream = SDL_IOFromConstMem(array, size)))            \
-            sdl_die("couldn't make a const mem sdl stream: %s\n");      \
-                                                                        \
-        if (!(surface = IMG_LoadPNG_IO(sdl_stream)))                    \
-            sdl_die("couldn't load png from stream: %s\n");             \
-        SDL_CloseIO(sdl_stream);                                        \
-                                                                        \
-        if (!((dst) = SDL_CreateTextureFromSurface(renderer, surface))) \
-            sdl_die("couldn't create texture from surface: %s\n");      \
-        SDL_DestroySurface(surface);                                    \
+#define load_png_file(array, size, dst)                                                        \
+    {                                                                                          \
+        SDL_Surface  *surface;                                                                 \
+        SDL_IOStream *sdl_stream;                                                              \
+                                                                                               \
+        if (!(sdl_stream = SDL_IOFromConstMem(array, size)))                                   \
+            sdl_die("couldn't make a const mem sdl stream");                                   \
+                                                                                               \
+        if (!(surface = IMG_LoadPNG_IO(sdl_stream))) sdl_die("couldn't load png from stream"); \
+        SDL_CloseIO(sdl_stream);                                                               \
+                                                                                               \
+        if (!((dst) = SDL_CreateTextureFromSurface(renderer, surface)))                        \
+            sdl_die("couldn't create texture from surface");                                   \
+        SDL_DestroySurface(surface);                                                           \
     }
 
 Buffer buffer = {0};
@@ -49,15 +47,15 @@ TTF_Font *font = NULL;
 SDL_Texture *player_texture      = NULL;
 SDL_Texture *dead_player_texture = NULL;
 
-Player player        = {.alive = true};
+Player player        = {.alive = 1};
 Enemy *enemies       = NULL;
 size_t enemies_len   = 0;
 size_t alive_enemies = 0;
 
-bool has_more_commits = true;
+char has_more_commits = 1;
 
-bool inputs[INPUTS_SIZE];
-bool started = false;
+char inputs[INPUTS_SIZE];
+char started = 0;
 
 static SDL_Texture *start_hint = NULL;
 
@@ -75,7 +73,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                        GitCommitsBulletHell_VERSION,
                        "io.github.p1k0chu.gitcommitsbullethell");
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) sdl_die("Couldn't init sdl video: %s\n");
+    if (!SDL_Init(SDL_INIT_VIDEO)) sdl_die("Couldn't init sdl video");
 
     if (!SDL_CreateWindowAndRenderer("Commits Bullet Hell",
                                      WINDOW_WIDTH,
@@ -83,21 +81,21 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                      SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE,
                                      &window,
                                      &renderer))
-        sdl_die("Couldn't create window/renderer: %s\n");
+        sdl_die("Couldn't create window/renderer");
 
-    if (!TTF_Init()) sdl_die("Couldn't initialize SDL3_ttf: %s\n");
+    if (!TTF_Init()) sdl_die("Couldn't initialize SDL3_ttf");
 
-    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), true, 30.0)))
-        sdl_die("Couldn't open font: %s\n");
+    if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), 1, 30.0)))
+        sdl_die("Couldn't open font");
 
     SDL_Surface *surface;
     if (!(surface = TTF_RenderText_Blended(font,
                                            "Ready? Press [Z] to start.",
                                            0,
                                            (SDL_Color){0xff, 0xff, 0xff, 0xff})))
-        sdl_die("couldn't render text: %s\n");
+        sdl_die("couldn't render text");
     if (!(start_hint = SDL_CreateTextureFromSurface(renderer, surface)))
-        sdl_die("couldn't create text texture: %s\n");
+        sdl_die("couldn't create text texture");
 
     load_png_file(heart_png, heart_png_len, player_texture);
     load_png_file(broken_heart_png, broken_heart_png_len, dead_player_texture);
@@ -119,7 +117,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     const char *cmd[] = {"git", "log", "--pretty=%s", NULL};
 
-    git_proc      = SDL_CreateProcess(cmd, true);
+    git_proc      = SDL_CreateProcess(cmd, 1);
     buffer.stream = SDL_GetProcessOutput(git_proc);
 
     return SDL_APP_CONTINUE;
@@ -154,7 +152,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             inputs[INPUT_X] = 1;
             break;
         case SDLK_Z:
-            started = true;
+            started = 1;
             break;
         }
         break;
@@ -186,6 +184,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
     (void)appstate;
+
+    size_t i;
 
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
     SDL_RenderClear(renderer);
@@ -241,7 +241,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
         SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
 
-        for (size_t i = 0; i < alive_enemies; ++i) {
+        for (i = 0; i < alive_enemies; ++i) {
             Enemy *enemy = enemies + i;
             tick_enemy(enemy->pattern_id, enemy);
 
@@ -249,7 +249,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
             enemy->rect.y += enemy->move_direction.y * enemy->speed * speed_mul;
 
             if (collide(&player, enemy)) {
-                player.alive = false;
+                player.alive = 0;
                 return SDL_APP_CONTINUE;
             }
 
@@ -293,8 +293,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         SDL_RenderTexture(renderer, start_hint, NULL, &dst);
     }
 
-render:
-    for (size_t i = 0; i < alive_enemies; ++i) {
+render:;
+    for (i = 0; i < alive_enemies; ++i) {
         Enemy *enemy = enemies + i;
 
         SDL_RenderTextureRotated(renderer,
@@ -326,7 +326,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     }
     TTF_Quit();
 
-    SDL_KillProcess(git_proc, true);
+    SDL_KillProcess(git_proc, 1);
     free(buffer.buffer_start);
 }
 

@@ -12,7 +12,7 @@ typedef struct Player {
     double x;
     double y;
     float  w, h;
-    bool   alive;
+    char   alive;
 } Player;
 
 void Player_get_points(const Player *this, Vec2d dst[4]);

@@ -2,15 +2,15 @@
 
 #include <stddef.h>
 
-#define die(s)                      \
-    {                               \
-        fprintf(stderr, "%s\n", s); \
-        exit(1);                    \
+#define die(s)                                                       \
+    {                                                                \
+        fprintf(stderr, "%s:" XSTR(__LINE__) ": %s\n", __func__, s); \
+        exit(1);                                                     \
     }
-#define sdl_die(s)                  \
-    {                               \
-        SDL_Log(s, SDL_GetError()); \
-        return SDL_APP_FAILURE;     \
+#define sdl_die(s)                                                                \
+    {                                                                             \
+        SDL_Log("%s:" XSTR(__LINE__) ": %s (%s)\n", __func__, s, SDL_GetError()); \
+        return SDL_APP_FAILURE;                                                   \
     }
 
 #define STR(s)  #s
