@@ -1,4 +1,4 @@
-#include "math.h"
+#include "my_math.h"
 
 #include <SDL3/SDL_stdinc.h>
 #include <assert.h>

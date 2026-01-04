@@ -31,21 +31,23 @@ find_package(SDL3 REQUIRED)
 find_package(SDL3_ttf REQUIRED)
 find_package(SDL3_image REQUIRED)
 
-configure_file(version.h.in version.h)
+configure_file(version.h.in include/version.h)
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include")
 
 add_custom_command(
-    OUTPUT font.h
-    COMMAND xxd -i -n tiny_ttf ${CMAKE_SOURCE_DIR}/font/tiny.ttf > font.h
+    OUTPUT "${CMAKE_BINARY_DIR}/include/font.h"
+    COMMAND xxd -i -n tiny_ttf ${CMAKE_SOURCE_DIR}/font/tiny.ttf > "${CMAKE_BINARY_DIR}/include/font.h"
     DEPENDS font/tiny.ttf
 )
 add_custom_command(
-    OUTPUT heart.h
-    COMMAND xxd -i -n heart_png ${CMAKE_SOURCE_DIR}/assets/heart.png > heart.h
+    OUTPUT "${CMAKE_BINARY_DIR}/include/heart.h"
+    COMMAND xxd -i -n heart_png ${CMAKE_SOURCE_DIR}/assets/heart.png > "${CMAKE_BINARY_DIR}/include/heart.h"
     DEPENDS assets/heart.png
 )
 add_custom_command(
-    OUTPUT broken_heart.h
-    COMMAND xxd -i -n broken_heart_png ${CMAKE_SOURCE_DIR}/assets/broken_heart.png > broken_heart.h
+    OUTPUT "${CMAKE_BINARY_DIR}/include/broken_heart.h"
+    COMMAND xxd -i -n broken_heart_png ${CMAKE_SOURCE_DIR}/assets/broken_heart.png > "${CMAKE_BINARY_DIR}/include/broken_heart.h"
     DEPENDS assets/broken_heart.png
 )
 
@@ -57,16 +59,19 @@ target_sources(git-commits-bullet-hell PRIVATE
     pattern.c
     utils.c
     math.c
-    font.h
-    heart.h
-    broken_heart.h
+    "${CMAKE_BINARY_DIR}/include/font.h"
+    "${CMAKE_BINARY_DIR}/include/heart.h"
+    "${CMAKE_BINARY_DIR}/include/broken_heart.h"
 )
 target_link_libraries(git-commits-bullet-hell PRIVATE
     SDL3
     SDL3_ttf
     SDL3_image
 )
-target_include_directories(git-commits-bullet-hell PRIVATE ${CMAKE_BINARY_DIR})
+target_include_directories(git-commits-bullet-hell PRIVATE 
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_BINARY_DIR}/include
+)
 
 install(
     TARGETS git-commits-bullet-hell

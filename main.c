@@ -5,7 +5,7 @@
 #include "enemy.h"
 #include "font.h"
 #include "heart.h"
-#include "math.h"
+#include "my_math.h"
 #include "pattern.h"
 #include "player.h"
 #include "utils.h"

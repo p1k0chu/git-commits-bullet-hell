@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math.h"
+#include "my_math.h"
 
 #include <SDL3/SDL_render.h>
 

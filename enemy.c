@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 #include "main.h"
-#include "math.h"
+#include "my_math.h"
 #include "utils.h"
 
 #include <SDL3/SDL_stdinc.h>
