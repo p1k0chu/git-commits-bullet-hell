@@ -9,6 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#else
+#include <sys/types.h>
+#endif
+
 char *Buffer_get_line(Buffer *buffer) {
     // remove old line
     size_t len = strnlen(buffer->buffer_start, buffer->buffer_size);
