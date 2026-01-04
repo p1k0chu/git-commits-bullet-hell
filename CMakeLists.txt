@@ -4,7 +4,11 @@ project(GitCommitsBulletHell VERSION 0.0.0)
 set(CMAKE_C_STANDARD 23)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_compile_options(-Wall -Wextra -Werror)
+if(MSVC)
+	add_compile_options(/Wall)
+else()
+	add_compile_options(-Wall -Wextra -Werror)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
     set(default_build_type "Debug")
