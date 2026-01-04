@@ -27,7 +27,7 @@ int spawn_enemy(Enemy *const       dst,
         return false;
     }
 
-    dst->speed = speed;
+    dst->speed      = speed;
     dst->pattern_id = pattern_id;
 
     SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, color);
