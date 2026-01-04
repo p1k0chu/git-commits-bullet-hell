@@ -2,6 +2,9 @@
 
 #include "utils.h"
 
+#include <SDL3/SDL_init.h>
+#include <SDL3/SDL_iostream.h>
+#include <SDL3/SDL_log.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,13 +32,16 @@ char *Buffer_get_line(Buffer *buffer) {
             buffer->buffer_size  = len + 10;
         }
 
-        nbytes = read(buffer->fd, buffer->buffer_start + len, buffer->buffer_size - len);
-        if (nbytes == -1) die("read");
+        nbytes = SDL_ReadIO(buffer->stream, buffer->buffer_start + len, buffer->buffer_size - len);
+        if (SDL_GetIOStatus(buffer->stream) == SDL_IO_STATUS_ERROR) {
+            fprintf(stderr, "failed to sdl_readio: %s\n", SDL_GetError());
+            exit(EXIT_FAILURE);
+        }
 
         len += nbytes;
     } while ((end_of_line = (char *)strnchr(buffer->buffer_start, '\n', buffer->buffer_size)) ==
                  NULL &&
-             nbytes != 0);
+             SDL_GetIOStatus(buffer->stream) != SDL_IO_STATUS_EOF);
 
     if (end_of_line == NULL) {
         if (len >= buffer->buffer_size) {

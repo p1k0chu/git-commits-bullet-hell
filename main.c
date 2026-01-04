@@ -64,6 +64,8 @@ static SDL_Texture *start_hint = NULL;
 static BulletPatternId pattern_id       = Dummy;
 static unsigned long   pattern_start_ms = 0;
 
+static SDL_Process *git_proc = NULL;
+
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
     (void)argc;
@@ -112,28 +114,13 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                      WINDOW_HEIGHT,
                                      SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    int   git_pipe[2];
-    pid_t pid;
-
     buffer.buffer_start = calloc(10, sizeof(char));
     buffer.buffer_size  = 10 * sizeof(char);
 
-    if (pipe(git_pipe) == -1) die("pipe");
+    const char *cmd[] = {"git", "log", "--pretty=%s", NULL};
 
-    buffer.fd = git_pipe[0];
-
-    if ((pid = fork()) == -1) die("fork");
-
-    if (pid == 0) {
-        dup2(git_pipe[1], STDOUT_FILENO);
-        close(git_pipe[0]);
-        close(git_pipe[1]);
-        execlp("git", "git", "log", "--pretty=%s", NULL);
-
-        die(__FILE_NAME__ ":" XSTR(__LINE__) ": execlp");
-    }
-
-    close(git_pipe[1]);
+    git_proc      = SDL_CreateProcess(cmd, true);
+    buffer.stream = SDL_GetProcessOutput(git_proc);
 
     return SDL_APP_CONTINUE;
 }
@@ -339,7 +326,7 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     }
     TTF_Quit();
 
-    close(buffer.fd);
+    SDL_KillProcess(git_proc, true);
     free(buffer.buffer_start);
 }
 
