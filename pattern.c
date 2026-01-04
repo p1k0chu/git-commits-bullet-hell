@@ -115,7 +115,7 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
         static Vec2d  spawns3[2] = {{0, 0}, {0, 0}};
         static double counter    = 0;
 
-        const double c = cos(counter);
+        const double c = SDL_cos(counter);
 
         spawns3[0].x = (double)WINDOW_WIDTH / 2.0 - 100.0 * c;
         spawns3[1].x = (double)WINDOW_WIDTH / 2.0 + 100.0 * (1 - c);

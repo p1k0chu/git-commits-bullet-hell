@@ -5,6 +5,7 @@
 #include "math.h"
 #include "utils.h"
 
+#include <SDL3/SDL_stdinc.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +45,7 @@ int spawn_enemy(Enemy *const       dst,
     dst->rect.y = spawn.y - dst->rect.h * spawn_src.y;
 
     double radian = NAN;
-    if (isnan(rotation)) {
+    if (SDL_isnan(rotation)) {
         radian = SDL_atan2(player.y - (dst->rect.y + dst->rect.h / 2.0),
                            player.x - (dst->rect.x + dst->rect.w / 2.0));
 
@@ -62,8 +63,8 @@ int spawn_enemy(Enemy *const       dst,
             radian = SDL_atan2(player.y - (dst->rect.y + dst->rect.h / 2.0),
                                player.x - (dst->rect.x + dst->rect.w / 2.0));
         }
-        dst->move_direction.x = cos(radian);
-        dst->move_direction.y = sin(radian);
+        dst->move_direction.x = SDL_cos(radian);
+        dst->move_direction.y = SDL_sin(radian);
     } else {
         dst->move_direction = move_direction;
     }
@@ -89,7 +90,7 @@ bool collide(Player *player, Enemy *enemy) {
 
 void Enemy_get_points(const Enemy *this, Vec2d dst[4]) {
     const Vec2d  e_center = {this->rect.x + this->rect.w / 2, this->rect.y + this->rect.h / 2};
-    const double rad      = this->rotation * M_PI / 180.0;
+    const double rad      = this->rotation * SDL_PI_D / 180.0;
 
     // top left
     Vec2d tmp = {-this->rect.w / 2, -this->rect.h / 2};
@@ -116,12 +117,12 @@ void Enemy_get_points(const Enemy *this, Vec2d dst[4]) {
 }
 
 void Enemy_get_normals(const Enemy *this, Vec2d dst[2]) {
-    double rad = this->rotation * M_PI / 180.0;
-    dst[0].x   = cos(rad);
-    dst[0].y   = sin(rad);
+    double rad = this->rotation * SDL_PI_D / 180.0;
+    dst[0].x   = SDL_cos(rad);
+    dst[0].y   = SDL_sin(rad);
 
-    rad += M_PI_2;
-    dst[1].x = cos(rad);
-    dst[1].y = sin(rad);
+    rad += SDL_PI_D / 2;
+    dst[1].x = SDL_cos(rad);
+    dst[1].y = SDL_sin(rad);
 }
 

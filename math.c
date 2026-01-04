@@ -1,16 +1,17 @@
 #include "math.h"
 
+#include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 
 double Vec2d_magnitude(const Vec2d *this) {
-    return sqrt(pow(this->x, 2) + pow(this->y, 2));
+    return SDL_sqrt(SDL_pow(this->x, 2) + SDL_pow(this->y, 2));
 }
 
 Vec2d Vec2d_get_normal(const Vec2d *this) {
-    const double direction = atan2(this->y, this->x) + M_PI_2;
-    return (Vec2d){cos(direction), sin(direction)};
+    const double direction = SDL_atan2(this->y, this->x) + SDL_PI_D / 2;
+    return (Vec2d){SDL_cos(direction), SDL_sin(direction)};
 }
 
 Vec2d Vec2d_project_on(const Vec2d *this, const Vec2d *other) {
@@ -21,8 +22,8 @@ Vec2d Vec2d_project_on(const Vec2d *this, const Vec2d *other) {
 }
 
 Vec2d Vec2d_rotate(const Vec2d *this, double rotation_radian) {
-    const double c = cos(rotation_radian);
-    const double s = sin(rotation_radian);
+    const double c = SDL_cos(rotation_radian);
+    const double s = SDL_sin(rotation_radian);
     return (Vec2d){
         c * this->x - this->y * s,
         this->x * s + this->y * c,
@@ -38,19 +39,19 @@ double dot_product(const Vec2d *left, const Vec2d *right) {
 }
 
 double Vec2d_angle2(const Vec2d *a, const Vec2d *b) {
-    return acos(dot_product(a, b) / Vec2d_magnitude(a) / Vec2d_magnitude(b));
+    return SDL_acos(dot_product(a, b) / Vec2d_magnitude(a) / Vec2d_magnitude(b));
 }
 
 double Vec2d_scalar_projection(const Vec2d *this, const Vec2d *onto) {
     const double angle = Vec2d_angle2(this, onto);
     // if angle is nan, one of the vectors is a zero vector,
     // thus scalar projection is always 0
-    if (isnan(angle)) return 0;
+    if (SDL_isnan(angle)) return 0;
 
-    assert(angle <= M_PI);
+    assert(angle <= SDL_PI_D);
 
     const Vec2d  proj = Vec2d_project_on(this, onto);
-    const double sign = (angle <= M_PI_2) ? 1 : -1;
+    const double sign = (angle <= SDL_PI_D / 2) ? 1 : -1;
     return sign * Vec2d_magnitude(&proj);
 }
 
