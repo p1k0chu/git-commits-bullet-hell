@@ -5,7 +5,6 @@ set(CMAKE_C_STANDARD 23)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(MSVC)
-    add_compile_options(/Wall)
     if (DEFINED ENV{VCPKG_ROOT})
         set(VCPKG_ROOT "$ENV{VCPKG_ROOT}")
     else()
