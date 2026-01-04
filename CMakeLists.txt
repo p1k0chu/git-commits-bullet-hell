@@ -65,7 +65,6 @@ target_link_libraries(git-commits-bullet-hell PRIVATE
     SDL3
     SDL3_ttf
     SDL3_image
-    m
 )
 target_include_directories(git-commits-bullet-hell PRIVATE ${CMAKE_BINARY_DIR})
 
