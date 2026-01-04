@@ -18,14 +18,14 @@ int spawn_enemy(Enemy *const       dst,
                 double             rotation,
                 const Vec2d        move_direction,
                 const unsigned int pattern_id) {
-    if (!has_more_commits) return false;
+    if (!has_more_commits) return 0;
 
     char *line;
     if (!(line = Buffer_get_line(&buffer))) die("Buffer_get_line");
 
     if (line[0] == 0) {
-        has_more_commits = false;
-        return false;
+        has_more_commits = 0;
+        return 0;
     }
 
     dst->speed      = speed;
@@ -69,10 +69,10 @@ int spawn_enemy(Enemy *const       dst,
         dst->move_direction = move_direction;
     }
 
-    return true;
+    return 1;
 }
 
-bool collide(Player *player, Enemy *enemy) {
+int collide(Player *player, Enemy *enemy) {
 
     Vec2d normals[4] = {// player's normals
                         {1, 0},

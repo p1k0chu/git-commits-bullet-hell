@@ -10,16 +10,16 @@
 
 static const SDL_Color SDL_COLOR_WHITE = {0xff, 0xff, 0xff, 0xff};
 
-bool should_spawn_enemies(BulletPatternId id, unsigned long ms) {
+int should_spawn_enemies(BulletPatternId id, unsigned long ms) {
     static unsigned long last_ms = 0;
 
 #define spawn_if_dt_gt(dt)         \
     {                              \
         if (ms - last_ms > (dt)) { \
             last_ms = ms;          \
-            return true;           \
+            return 1;              \
         }                          \
-        return false;              \
+        return 0;                  \
     }
 
     switch (id) {
@@ -35,7 +35,7 @@ bool should_spawn_enemies(BulletPatternId id, unsigned long ms) {
 #undef spawn_if_dt_gt
 }
 
-bool should_start_next_pattern(BulletPatternId id, unsigned long time_since_pattern_start_ms) {
+int should_start_next_pattern(BulletPatternId id, unsigned long time_since_pattern_start_ms) {
     switch (id) {
     case Dummy:
         return time_since_pattern_start_ms > 5000;
@@ -75,9 +75,8 @@ void spawn_enemies(BulletPatternId id) {
     const Vec2d *move_directions;
     const size_t move_directions_len = get_move_direction(id, &move_directions);
 
-    size_t j = 0;
-    size_t k = 0;
-    for (size_t i = 0; i < spawns_len; ++i) {
+    size_t i = 0, j = 0, k = 0;
+    for (; i < spawns_len; ++i) {
         const Vec2d *spawn          = spawns + i;
         const Vec2d *spawn_src      = spawn_srcs + j;
         const Vec2d *move_direction = move_directions + k;
@@ -101,17 +100,17 @@ void spawn_enemies(BulletPatternId id) {
 static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
 
     switch (id) {
-    case Dummy:
+    case Dummy:;
         static const Vec2d spawns[] = {{WINDOW_WIDTH, 100},
                                        {WINDOW_WIDTH, 300},
                                        {WINDOW_WIDTH, 600}};
         *dst                        = spawns;
         return size_of_array(spawns);
-    case SpamTopRight:
+    case SpamTopRight:;
         static const Vec2d spawns2[] = {{WINDOW_WIDTH, 0}};
         *dst                         = spawns2;
         return size_of_array(spawns2);
-    case TopDown:
+    case TopDown:;
         static Vec2d  spawns3[2] = {{0, 0}, {0, 0}};
         static double counter    = 0;
 
@@ -123,7 +122,7 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
 
         *dst = spawns3;
         return size_of_array(spawns3);
-    case Sides:
+    case Sides:;
         static const Vec2d spawns4[] = {
             // left
             {0, 100},
@@ -149,19 +148,19 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
 
 static size_t get_spawn_srcs(BulletPatternId id, const Vec2d **const dst) {
     switch (id) {
-    case Dummy:
+    case Dummy:;
         static Vec2d spawns[] = {{1, 0.5}};
         *dst                  = spawns;
         return size_of_array(spawns);
-    case SpamTopRight:
+    case SpamTopRight:;
         static Vec2d spawns2[] = {{1, 0}};
         *dst                   = spawns2;
         return size_of_array(spawns2);
-    case TopDown:
+    case TopDown:;
         static Vec2d spawns3[] = {{1, 0}, {0, 0}};
         *dst                   = spawns3;
         return size_of_array(spawns3);
-    case Sides:
+    case Sides:;
         static Vec2d spawns4[] = {
             {1, 0.5},
             {1, 0.5},
@@ -203,15 +202,15 @@ static double get_rotation(BulletPatternId id) {
 static size_t get_move_direction(BulletPatternId id, const Vec2d **dst) {
     switch (id) {
     case Dummy:
-    case SpamTopRight:
+    case SpamTopRight:;
         static const Vec2d none = {0, 0};
         *dst                    = &none;
         return 1;
-    case TopDown:
+    case TopDown:;
         static const Vec2d down = {0, 1};
         *dst                    = &down;
         return 1;
-    case Sides:
+    case Sides:;
         static const Vec2d array[] = {{1, 0}, {1, 0}, {1, 0}, {1, 0}, {1, 0}, {1, 0}, {-1, 0}};
         *dst                       = array;
         return size_of_array(array);

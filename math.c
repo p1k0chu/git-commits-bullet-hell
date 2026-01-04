@@ -3,7 +3,6 @@
 #include <SDL3/SDL_stdinc.h>
 #include <assert.h>
 #include <math.h>
-#include <stdio.h>
 
 double Vec2d_magnitude(const Vec2d *this) {
     return SDL_sqrt(SDL_pow(this->x, 2) + SDL_pow(this->y, 2));
@@ -55,19 +54,21 @@ double Vec2d_scalar_projection(const Vec2d *this, const Vec2d *onto) {
     return sign * Vec2d_magnitude(&proj);
 }
 
-bool polygons_collide(const Vec2d *const normals,
-                      const size_t       normals_len,
-                      const Vec2d *const dots_poly1,
-                      const size_t       dots_poly1_len,
-                      const Vec2d *const dots_poly2,
-                      const size_t       dots_poly2_len) {
-    for (size_t i = 0; i < normals_len; ++i) {
+int polygons_collide(const Vec2d *const normals,
+                     const size_t       normals_len,
+                     const Vec2d *const dots_poly1,
+                     const size_t       dots_poly1_len,
+                     const Vec2d *const dots_poly2,
+                     const size_t       dots_poly2_len) {
+    size_t i, j;
+
+    for (i = 0; i < normals_len; ++i) {
         const Vec2d *normal = normals + i;
 
         double poly1_min = INFINITY;
         double poly1_max = -INFINITY;
 
-        for (size_t j = 0; j < dots_poly1_len; ++j) {
+        for (j = 0; j < dots_poly1_len; ++j) {
             const Vec2d *point = dots_poly1 + j;
             const double m     = Vec2d_scalar_projection(point, normal);
             if (m > poly1_max) poly1_max = m;
@@ -77,7 +78,7 @@ bool polygons_collide(const Vec2d *const normals,
         double poly2_min = INFINITY;
         double poly2_max = -INFINITY;
 
-        for (size_t j = 0; j < dots_poly2_len; ++j) {
+        for (j = 0; j < dots_poly2_len; ++j) {
             const Vec2d *point = dots_poly2 + j;
             const double m     = Vec2d_scalar_projection(point, normal);
             if (m > poly2_max) poly2_max = m;
@@ -86,9 +87,9 @@ bool polygons_collide(const Vec2d *const normals,
 
         if ((poly1_min < poly2_min && poly1_max < poly2_min) ||
             (poly1_min > poly2_max && poly1_max > poly2_max)) {
-            return false;
+            return 0;
         }
     }
-    return true;
+    return 1;
 }
 

@@ -31,5 +31,5 @@ int spawn_enemy(Enemy       *dst,
                 Vec2d        move_direction,
                 unsigned int pattern_id);
 
-bool collide(Player *player, Enemy *enemy);
+int collide(Player *player, Enemy *enemy);
 
