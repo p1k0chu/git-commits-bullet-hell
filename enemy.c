@@ -32,12 +32,12 @@ int spawn_enemy(Enemy *const       dst,
     dst->pattern_id = pattern_id;
 
     SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, color);
-    if (!surface) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
+    if (!surface) sdl_die("");
 
     dst->texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_DestroySurface(surface);
 
-    if (!dst->texture) sdl_die(__FILE_NAME__ ":" XSTR(__LINE__) ": %s\n");
+    if (!dst->texture) sdl_die("");
 
     SDL_GetTextureSize(dst->texture, &dst->rect.w, &dst->rect.h);
 

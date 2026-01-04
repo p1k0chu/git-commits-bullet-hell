@@ -21,21 +21,20 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-#define load_png_file(array, size, dst)                                 \
-    {                                                                   \
-        SDL_Surface  *surface;                                          \
-        SDL_IOStream *sdl_stream;                                       \
-                                                                        \
-        if (!(sdl_stream = SDL_IOFromConstMem(array, size)))            \
-            sdl_die("couldn't make a const mem sdl stream: %s\n");      \
-                                                                        \
-        if (!(surface = IMG_LoadPNG_IO(sdl_stream)))                    \
-            sdl_die("couldn't load png from stream: %s\n");             \
-        SDL_CloseIO(sdl_stream);                                        \
-                                                                        \
-        if (!((dst) = SDL_CreateTextureFromSurface(renderer, surface))) \
-            sdl_die("couldn't create texture from surface: %s\n");      \
-        SDL_DestroySurface(surface);                                    \
+#define load_png_file(array, size, dst)                                                        \
+    {                                                                                          \
+        SDL_Surface  *surface;                                                                 \
+        SDL_IOStream *sdl_stream;                                                              \
+                                                                                               \
+        if (!(sdl_stream = SDL_IOFromConstMem(array, size)))                                   \
+            sdl_die("couldn't make a const mem sdl stream");                                   \
+                                                                                               \
+        if (!(surface = IMG_LoadPNG_IO(sdl_stream))) sdl_die("couldn't load png from stream"); \
+        SDL_CloseIO(sdl_stream);                                                               \
+                                                                                               \
+        if (!((dst) = SDL_CreateTextureFromSurface(renderer, surface)))                        \
+            sdl_die("couldn't create texture from surface");                                   \
+        SDL_DestroySurface(surface);                                                           \
     }
 
 Buffer buffer = {0};
@@ -74,7 +73,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                        GitCommitsBulletHell_VERSION,
                        "io.github.p1k0chu.gitcommitsbullethell");
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) sdl_die("Couldn't init sdl video: %s\n");
+    if (!SDL_Init(SDL_INIT_VIDEO)) sdl_die("Couldn't init sdl video");
 
     if (!SDL_CreateWindowAndRenderer("Commits Bullet Hell",
                                      WINDOW_WIDTH,
@@ -82,21 +81,21 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                      SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE,
                                      &window,
                                      &renderer))
-        sdl_die("Couldn't create window/renderer: %s\n");
+        sdl_die("Couldn't create window/renderer");
 
-    if (!TTF_Init()) sdl_die("Couldn't initialize SDL3_ttf: %s\n");
+    if (!TTF_Init()) sdl_die("Couldn't initialize SDL3_ttf");
 
     if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), 1, 30.0)))
-        sdl_die("Couldn't open font: %s\n");
+        sdl_die("Couldn't open font");
 
     SDL_Surface *surface;
     if (!(surface = TTF_RenderText_Blended(font,
                                            "Ready? Press [Z] to start.",
                                            0,
                                            (SDL_Color){0xff, 0xff, 0xff, 0xff})))
-        sdl_die("couldn't render text: %s\n");
+        sdl_die("couldn't render text");
     if (!(start_hint = SDL_CreateTextureFromSurface(renderer, surface)))
-        sdl_die("couldn't create text texture: %s\n");
+        sdl_die("couldn't create text texture");
 
     load_png_file(heart_png, heart_png_len, player_texture);
     load_png_file(broken_heart_png, broken_heart_png_len, dead_player_texture);
