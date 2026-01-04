@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 char *Buffer_get_line(Buffer *buffer) {
     // remove old line
