@@ -67,6 +67,11 @@ target_sources(git-commits-bullet-hell PRIVATE
     pattern.c
     utils.c
     math.c
+    buffer.h
+    enemy.h
+    player.h
+    pattern.h
+    math.h
     font.h
     heart.h
     broken_heart.h
