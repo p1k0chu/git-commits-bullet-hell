@@ -33,12 +33,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "${PROJECT_NAME} Build Type: ${CMAKE_BUILD_TYPE}")
 
-find_package(Git REQUIRED)
-execute_process(
-    COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
-    OUTPUT_VARIABLE GIT_VERSION
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(GitVersion)
 if (GIT_VERSION)
     set(PROJECT_VERSION ${GIT_VERSION})
 endif()
