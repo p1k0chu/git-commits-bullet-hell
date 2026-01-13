@@ -13,15 +13,7 @@
     }:
     let
       pkgs = import nixpkgs { system = "x86_64-linux"; };
-    in
-    {
-
-      packages.x86_64-linux.git-commits-bullet-hell = pkgs.stdenv.mkDerivation (finalAttrs: {
-        pname = "git-commits-bullet-hell";
-        version = "0.0.0";
-
-        src = ./.;
-
+      deps = {
         nativeBuildInputs = with pkgs; [
           cmake
           xxd
@@ -32,6 +24,17 @@
           sdl3-image
           sdl3-ttf
         ];
+      };
+    in
+    {
+
+      packages.x86_64-linux.git-commits-bullet-hell = pkgs.stdenv.mkDerivation (finalAttrs: {
+        pname = "git-commits-bullet-hell";
+        version = "0.0.0";
+
+        src = ./.;
+
+        inherit (deps) nativeBuildInputs buildInputs;
 
         configurePhase = ''
           cmake -B build
@@ -58,5 +61,17 @@
 
       packages.x86_64-linux.default = self.packages.x86_64-linux.git-commits-bullet-hell;
 
+      devShells.x86_64-linux.git-commits-bullet-hell = pkgs.mkShell {
+        packages =
+          with pkgs;
+          [
+            clang-analyzer
+            clang-tools
+          ]
+          ++ deps.nativeBuildInputs
+          ++ deps.buildInputs;
+      };
+
+      devShells.x86_64-linux.default = self.devShells.x86_64-linux.git-commits-bullet-hell;
     };
 }
