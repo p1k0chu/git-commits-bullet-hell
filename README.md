@@ -15,7 +15,7 @@ On nix, just run `nix run .`
 otherwise, to build this project you need these dependencies: `xxd git cmake sdl3 sdl3-ttf sdl3-image` (or see flake.nix for up-to-date deps)
 
 
-very standard proccess:
+very standard process:
 ```sh
 cmake -B build
 cmake --build build
