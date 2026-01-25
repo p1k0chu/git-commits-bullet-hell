@@ -4,6 +4,7 @@
 #include "broken_heart.h"
 #include "enemy.h"
 #include "font.h"
+#include "git2/commit.h"
 #include "git2/types.h"
 #include "heart.h"
 #include "my_math.h"
@@ -63,6 +64,23 @@ static SDL_Texture *start_hint = NULL;
 
 static BulletPatternId pattern_id = Dummy;
 static unsigned long pattern_start_ms = 0;
+
+static git_commit *get_commit_from_string(git_repository *repo, const char *s) {
+    int error;
+    git_object *obj;
+    error = git_revparse_single(&obj, repo, s);
+    if (error < 0)
+        libgit_panic(error);
+
+    git_object *peeled;
+    error = git_object_peel(&peeled, obj, GIT_OBJECT_COMMIT);
+    if (error < 0)
+        libgit_panic(error);
+
+    git_object_free(obj);
+
+    return (git_commit *)peeled;
+}
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -127,9 +145,27 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     if (error < 0)
         libgit_panic(error);
 
-    error = git_revwalk_push_head(walker);
+    if (args.rev_push == NULL) {
+        error = git_revwalk_push_head(walker);
+    } else {
+        git_commit *commit = get_commit_from_string(repo, args.rev_push);
+        error = git_revwalk_push(walker, git_commit_id(commit));
+        if (error < 0)
+            libgit_panic(error);
+
+        git_commit_free(commit);
+    }
+
     if (error < 0)
         libgit_panic(error);
+
+    if (args.rev_hide != NULL) {
+        git_commit *commit = get_commit_from_string(repo, args.rev_hide);
+        error = git_revwalk_hide(walker, git_commit_id(commit));
+        if (error < 0)
+            libgit_panic(error);
+        git_commit_free(commit);
+    }
 
     return SDL_APP_CONTINUE;
 }
