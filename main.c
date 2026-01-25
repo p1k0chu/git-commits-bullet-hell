@@ -22,20 +22,21 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-#define load_png_file(array, size, dst)                                                        \
-    {                                                                                          \
-        SDL_Surface *surface;                                                                  \
-        SDL_IOStream *sdl_stream;                                                              \
-                                                                                               \
-        if (!(sdl_stream = SDL_IOFromConstMem(array, size)))                                   \
-            sdl_die("couldn't make a const mem sdl stream");                                   \
-                                                                                               \
-        if (!(surface = IMG_LoadPNG_IO(sdl_stream))) sdl_die("couldn't load png from stream"); \
-        SDL_CloseIO(sdl_stream);                                                               \
-                                                                                               \
-        if (!((dst) = SDL_CreateTextureFromSurface(renderer, surface)))                        \
-            sdl_die("couldn't create texture from surface");                                   \
-        SDL_DestroySurface(surface);                                                           \
+#define load_png_file(array, size, dst)                                 \
+    {                                                                   \
+        SDL_Surface *surface;                                           \
+        SDL_IOStream *sdl_stream;                                       \
+                                                                        \
+        if (!(sdl_stream = SDL_IOFromConstMem(array, size)))            \
+            sdl_die("couldn't make a const mem sdl stream");            \
+                                                                        \
+        if (!(surface = IMG_LoadPNG_IO(sdl_stream)))                    \
+            sdl_die("couldn't load png from stream");                   \
+        SDL_CloseIO(sdl_stream);                                        \
+                                                                        \
+        if (!((dst) = SDL_CreateTextureFromSurface(renderer, surface))) \
+            sdl_die("couldn't create texture from surface");            \
+        SDL_DestroySurface(surface);                                    \
     }
 
 SDL_Window *window = NULL;
@@ -71,7 +72,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                        GitCommitsBulletHell_VERSION,
                        "io.github.p1k0chu.gitcommitsbullethell");
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) sdl_die("Couldn't init sdl video");
+    if (!SDL_Init(SDL_INIT_VIDEO))
+        sdl_die("Couldn't init sdl video");
 
     if (!SDL_CreateWindowAndRenderer("Commits Bullet Hell",
                                      WINDOW_WIDTH,
@@ -81,7 +83,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                      &renderer))
         sdl_die("Couldn't create window/renderer");
 
-    if (!TTF_Init()) sdl_die("Couldn't initialize SDL3_ttf");
+    if (!TTF_Init())
+        sdl_die("Couldn't initialize SDL3_ttf");
 
     if (!(font = TTF_OpenFontIO(SDL_IOFromConstMem(tiny_ttf, tiny_ttf_len), 1, 30.0)))
         sdl_die("Couldn't open font");
@@ -112,16 +115,20 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
     int error;
     error = git_libgit2_init();
-    if (error < 0) libgit_panic(error);
+    if (error < 0)
+        libgit_panic(error);
 
     error = git_repository_open_ext(&repo, getenv("PWD"), 0, NULL);
-    if (error < 0) libgit_panic(error);
+    if (error < 0)
+        libgit_panic(error);
 
     error = git_revwalk_new(&walker, repo);
-    if (error < 0) libgit_panic(error);
+    if (error < 0)
+        libgit_panic(error);
 
     error = git_revwalk_push_head(walker);
-    if (error < 0) libgit_panic(error);
+    if (error < 0)
+        libgit_panic(error);
 
     return SDL_APP_CONTINUE;
 }
@@ -276,7 +283,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         }
 
         if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
-            if (alive_enemies > 0) goto render;
+            if (alive_enemies > 0)
+                goto render;
 
             pattern_id = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
             pattern_start_ms = ms;

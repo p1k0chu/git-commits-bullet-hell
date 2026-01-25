@@ -45,7 +45,8 @@ double Vec2d_scalar_projection(const Vec2d *this, const Vec2d *onto) {
     const double angle = Vec2d_angle2(this, onto);
     // if angle is nan, one of the vectors is a zero vector,
     // thus scalar projection is always 0
-    if (SDL_isnan(angle)) return 0;
+    if (SDL_isnan(angle))
+        return 0;
 
     assert(angle <= SDL_PI_D);
 
@@ -71,8 +72,10 @@ int polygons_collide(const Vec2d *const normals,
         for (j = 0; j < dots_poly1_len; ++j) {
             const Vec2d *point = dots_poly1 + j;
             const double m = Vec2d_scalar_projection(point, normal);
-            if (m > poly1_max) poly1_max = m;
-            if (m < poly1_min) poly1_min = m;
+            if (m > poly1_max)
+                poly1_max = m;
+            if (m < poly1_min)
+                poly1_min = m;
         }
 
         double poly2_min = INFINITY;
@@ -81,8 +84,10 @@ int polygons_collide(const Vec2d *const normals,
         for (j = 0; j < dots_poly2_len; ++j) {
             const Vec2d *point = dots_poly2 + j;
             const double m = Vec2d_scalar_projection(point, normal);
-            if (m > poly2_max) poly2_max = m;
-            if (m < poly2_min) poly2_min = m;
+            if (m > poly2_max)
+                poly2_max = m;
+            if (m < poly2_min)
+                poly2_min = m;
         }
 
         if ((poly1_min < poly2_min && poly1_max < poly2_min) ||

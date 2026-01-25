@@ -62,7 +62,8 @@ void spawn_enemies(BulletPatternId id) {
     if (alive_enemies + spawns_len > enemies_len) {
         enemies_len = alive_enemies + spawns_len;
         void *ptr = realloc(enemies, sizeof(enemies[0]) * enemies_len);
-        if (!ptr) die("realloc");
+        if (!ptr)
+            die("realloc");
         enemies = ptr;
     }
 
@@ -92,8 +93,10 @@ void spawn_enemies(BulletPatternId id) {
             break;
         }
         ++alive_enemies;
-        if (j < spawn_srcs_len - 1) ++j;
-        if (k < move_directions_len - 1) ++k;
+        if (j < spawn_srcs_len - 1)
+            ++j;
+        if (k < move_directions_len - 1)
+            ++k;
     }
 }
 

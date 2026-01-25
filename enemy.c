@@ -20,27 +20,32 @@ int spawn_enemy(Enemy *const dst,
                 const Vec2d move_direction,
                 const unsigned int pattern_id) {
     git_oid oid;
-    if (git_revwalk_next(&oid, walker) != 0) return 0;
+    if (git_revwalk_next(&oid, walker) != 0)
+        return 0;
 
     git_commit *commit;
     int error = git_commit_lookup(&commit, repo, &oid);
-    if (error < 0) libgit_panic(error);
+    if (error < 0)
+        libgit_panic(error);
 
     const char *line = git_commit_summary(commit);
-    if (line == NULL) libgit_panic(0);
+    if (line == NULL)
+        libgit_panic(0);
 
     dst->speed = speed;
     dst->pattern_id = pattern_id;
 
     SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, color);
-    if (!surface) sdl_die("");
+    if (!surface)
+        sdl_die("");
 
     git_commit_free(commit);
 
     dst->texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_DestroySurface(surface);
 
-    if (!dst->texture) sdl_die("");
+    if (!dst->texture)
+        sdl_die("");
 
     SDL_GetTextureSize(dst->texture, &dst->rect.w, &dst->rect.h);
 
