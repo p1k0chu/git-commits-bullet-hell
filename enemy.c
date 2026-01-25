@@ -1,6 +1,5 @@
 #include "enemy.h"
 
-#include "buffer.h"
 #include "git2/commit.h"
 #include "git2/revwalk.h"
 #include "main.h"

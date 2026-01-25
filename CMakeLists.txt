@@ -70,7 +70,6 @@ add_custom_command(
 
 add_executable(git-commits-bullet-hell main.c)
 target_sources(git-commits-bullet-hell PRIVATE
-    buffer.c
     enemy.c
     player.c
     pattern.c
