@@ -16,7 +16,7 @@ Vec2d Vec2d_get_normal(const Vec2d *this) {
 Vec2d Vec2d_project_on(const Vec2d *this, const Vec2d *other) {
     const double ab = dot_product(this, other);
     const double bb = dot_product(other, other);
-    const double i  = ab / bb;
+    const double i = ab / bb;
     return (Vec2d){other->x * i, other->y * i};
 }
 
@@ -49,17 +49,17 @@ double Vec2d_scalar_projection(const Vec2d *this, const Vec2d *onto) {
 
     assert(angle <= SDL_PI_D);
 
-    const Vec2d  proj = Vec2d_project_on(this, onto);
+    const Vec2d proj = Vec2d_project_on(this, onto);
     const double sign = (angle <= SDL_PI_D / 2) ? 1 : -1;
     return sign * Vec2d_magnitude(&proj);
 }
 
 int polygons_collide(const Vec2d *const normals,
-                     const size_t       normals_len,
+                     const size_t normals_len,
                      const Vec2d *const dots_poly1,
-                     const size_t       dots_poly1_len,
+                     const size_t dots_poly1_len,
                      const Vec2d *const dots_poly2,
-                     const size_t       dots_poly2_len) {
+                     const size_t dots_poly2_len) {
     size_t i, j;
 
     for (i = 0; i < normals_len; ++i) {
@@ -70,7 +70,7 @@ int polygons_collide(const Vec2d *const normals,
 
         for (j = 0; j < dots_poly1_len; ++j) {
             const Vec2d *point = dots_poly1 + j;
-            const double m     = Vec2d_scalar_projection(point, normal);
+            const double m = Vec2d_scalar_projection(point, normal);
             if (m > poly1_max) poly1_max = m;
             if (m < poly1_min) poly1_min = m;
         }
@@ -80,7 +80,7 @@ int polygons_collide(const Vec2d *const normals,
 
         for (j = 0; j < dots_poly2_len; ++j) {
             const Vec2d *point = dots_poly2 + j;
-            const double m     = Vec2d_scalar_projection(point, normal);
+            const double m = Vec2d_scalar_projection(point, normal);
             if (m > poly2_max) poly2_max = m;
             if (m < poly2_min) poly2_min = m;
         }

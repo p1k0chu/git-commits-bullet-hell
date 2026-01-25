@@ -61,7 +61,7 @@ void spawn_enemies(BulletPatternId id) {
 
     if (alive_enemies + spawns_len > enemies_len) {
         enemies_len = alive_enemies + spawns_len;
-        void *ptr   = realloc(enemies, sizeof(enemies[0]) * enemies_len);
+        void *ptr = realloc(enemies, sizeof(enemies[0]) * enemies_len);
         if (!ptr) die("realloc");
         enemies = ptr;
     }
@@ -69,7 +69,7 @@ void spawn_enemies(BulletPatternId id) {
     const Vec2d *spawn_srcs;
     const size_t spawn_srcs_len = get_spawn_srcs(id, &spawn_srcs);
 
-    double speed    = get_speed(id);
+    double speed = get_speed(id);
     double rotation = get_rotation(id);
 
     const Vec2d *move_directions;
@@ -77,8 +77,8 @@ void spawn_enemies(BulletPatternId id) {
 
     size_t i = 0, j = 0, k = 0;
     for (; i < spawns_len; ++i) {
-        const Vec2d *spawn          = spawns + i;
-        const Vec2d *spawn_src      = spawn_srcs + j;
+        const Vec2d *spawn = spawns + i;
+        const Vec2d *spawn_src = spawn_srcs + j;
         const Vec2d *move_direction = move_directions + k;
 
         if (!spawn_enemy(enemies + alive_enemies,
@@ -104,15 +104,15 @@ static size_t get_spawn_points(BulletPatternId id, const Vec2d **const dst) {
         static const Vec2d spawns[] = {{WINDOW_WIDTH, 100},
                                        {WINDOW_WIDTH, 300},
                                        {WINDOW_WIDTH, 600}};
-        *dst                        = spawns;
+        *dst = spawns;
         return size_of_array(spawns);
     case SpamTopRight:;
         static const Vec2d spawns2[] = {{WINDOW_WIDTH, 0}};
-        *dst                         = spawns2;
+        *dst = spawns2;
         return size_of_array(spawns2);
     case TopDown:;
-        static Vec2d  spawns3[2] = {{0, 0}, {0, 0}};
-        static double counter    = 0;
+        static Vec2d spawns3[2] = {{0, 0}, {0, 0}};
+        static double counter = 0;
 
         const double c = SDL_cos(counter);
 
@@ -150,15 +150,15 @@ static size_t get_spawn_srcs(BulletPatternId id, const Vec2d **const dst) {
     switch (id) {
     case Dummy:;
         static Vec2d spawns[] = {{1, 0.5}};
-        *dst                  = spawns;
+        *dst = spawns;
         return size_of_array(spawns);
     case SpamTopRight:;
         static Vec2d spawns2[] = {{1, 0}};
-        *dst                   = spawns2;
+        *dst = spawns2;
         return size_of_array(spawns2);
     case TopDown:;
         static Vec2d spawns3[] = {{1, 0}, {0, 0}};
-        *dst                   = spawns3;
+        *dst = spawns3;
         return size_of_array(spawns3);
     case Sides:;
         static Vec2d spawns4[] = {
@@ -204,15 +204,15 @@ static size_t get_move_direction(BulletPatternId id, const Vec2d **dst) {
     case Dummy:
     case SpamTopRight:;
         static const Vec2d none = {0, 0};
-        *dst                    = &none;
+        *dst = &none;
         return 1;
     case TopDown:;
         static const Vec2d down = {0, 1};
-        *dst                    = &down;
+        *dst = &down;
         return 1;
     case Sides:;
         static const Vec2d array[] = {{1, 0}, {1, 0}, {1, 0}, {1, 0}, {1, 0}, {1, 0}, {-1, 0}};
-        *dst                       = array;
+        *dst = array;
         return size_of_array(array);
     }
     die("enum");

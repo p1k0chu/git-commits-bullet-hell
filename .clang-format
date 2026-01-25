@@ -1,9 +1,9 @@
 ﻿---
 BasedOnStyle: LLVM
 AlignAfterOpenBracket: Align
-AlignConsecutiveMacros: 'true'
-AlignConsecutiveAssignments: 'true'
-AlignConsecutiveDeclarations: 'true'
+AlignConsecutiveMacros: 'false'
+AlignConsecutiveAssignments: 'false'
+AlignConsecutiveDeclarations: 'false'
 AlignEscapedNewlines: Left
 AlignOperands: 'true'
 AlignTrailingComments: 'true'

@@ -6,7 +6,7 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 
-#define WINDOW_WIDTH  1920
+#define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
 
 enum Inputs {
@@ -19,7 +19,7 @@ enum Inputs {
 };
 #define INPUTS_SIZE 6
 
-extern SDL_Window   *window;
+extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
 extern TTF_Font *font;
@@ -33,7 +33,7 @@ extern size_t enemies_len;
 extern size_t alive_enemies;
 
 extern git_repository *repo;
-extern git_revwalk    *walker;
+extern git_revwalk *walker;
 
 extern char inputs[INPUTS_SIZE];
 extern char started;

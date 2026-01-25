@@ -4,15 +4,15 @@
 
 #include <SDL3/SDL_render.h>
 
-#define PLAYER_SPEED           400
+#define PLAYER_SPEED 400
 #define PLAYER_SHIFT_SPEED_MUL .3f
-#define PLAYER_HITBOX_MUL      0.5f
+#define PLAYER_HITBOX_MUL 0.5f
 
 typedef struct Player {
     double x;
     double y;
-    float  w, h;
-    char   alive;
+    float w, h;
+    char alive;
 } Player;
 
 void Player_get_points(const Player *this, Vec2d dst[4]);

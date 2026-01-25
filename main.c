@@ -24,7 +24,7 @@
 
 #define load_png_file(array, size, dst)                                                        \
     {                                                                                          \
-        SDL_Surface  *surface;                                                                 \
+        SDL_Surface *surface;                                                                  \
         SDL_IOStream *sdl_stream;                                                              \
                                                                                                \
         if (!(sdl_stream = SDL_IOFromConstMem(array, size)))                                   \
@@ -38,29 +38,29 @@
         SDL_DestroySurface(surface);                                                           \
     }
 
-SDL_Window   *window   = NULL;
+SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
 TTF_Font *font = NULL;
 
-SDL_Texture *player_texture      = NULL;
+SDL_Texture *player_texture = NULL;
 SDL_Texture *dead_player_texture = NULL;
 
-Player player        = {.alive = 1};
-Enemy *enemies       = NULL;
-size_t enemies_len   = 0;
+Player player = {.alive = 1};
+Enemy *enemies = NULL;
+size_t enemies_len = 0;
 size_t alive_enemies = 0;
 
-git_repository *repo   = NULL;
-git_revwalk    *walker = NULL;
+git_repository *repo = NULL;
+git_revwalk *walker = NULL;
 
 char inputs[INPUTS_SIZE];
 char started = 0;
 
 static SDL_Texture *start_hint = NULL;
 
-static BulletPatternId pattern_id       = Dummy;
-static unsigned long   pattern_start_ms = 0;
+static BulletPatternId pattern_id = Dummy;
+static unsigned long pattern_start_ms = 0;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -211,7 +211,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
     unsigned long ms = SDL_GetTicks();
     unsigned long dt = ms - last_ms;
-    last_ms          = ms;
+    last_ms = ms;
 
     double speed_mul = (double)dt / 1000.f;
 
@@ -263,7 +263,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
                                                    {WINDOW_WIDTH, 0},
                                                    {0, WINDOW_HEIGHT},
                                                    {WINDOW_WIDTH, WINDOW_HEIGHT}};
-            Vec2d              enemy_points[4];
+            Vec2d enemy_points[4];
             Enemy_get_points(enemy, enemy_points);
 
             if (!polygons_collide(normals, 4, enemy_points, 4, screen_points, 4)) {
@@ -278,7 +278,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
             if (alive_enemies > 0) goto render;
 
-            pattern_id       = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
+            pattern_id = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
             pattern_start_ms = ms;
 
 #ifndef NDEBUG

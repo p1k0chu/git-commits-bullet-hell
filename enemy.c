@@ -11,25 +11,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int spawn_enemy(Enemy *const       dst,
-                const Vec2d        spawn,
-                const Vec2d        spawn_src,
-                const double       speed,
-                const SDL_Color    color,
-                double             rotation,
-                const Vec2d        move_direction,
+int spawn_enemy(Enemy *const dst,
+                const Vec2d spawn,
+                const Vec2d spawn_src,
+                const double speed,
+                const SDL_Color color,
+                double rotation,
+                const Vec2d move_direction,
                 const unsigned int pattern_id) {
     git_oid oid;
     if (git_revwalk_next(&oid, walker) != 0) return 0;
 
     git_commit *commit;
-    int         error = git_commit_lookup(&commit, repo, &oid);
+    int error = git_commit_lookup(&commit, repo, &oid);
     if (error < 0) libgit_panic(error);
 
     const char *line = git_commit_summary(commit);
     if (line == NULL) libgit_panic(0);
 
-    dst->speed      = speed;
+    dst->speed = speed;
     dst->pattern_id = pattern_id;
 
     SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, color);
@@ -92,37 +92,37 @@ int collide(Player *player, Enemy *enemy) {
 }
 
 void Enemy_get_points(const Enemy *this, Vec2d dst[4]) {
-    const Vec2d  e_center = {this->rect.x + this->rect.w / 2, this->rect.y + this->rect.h / 2};
-    const double rad      = this->rotation * SDL_PI_D / 180.0;
+    const Vec2d e_center = {this->rect.x + this->rect.w / 2, this->rect.y + this->rect.h / 2};
+    const double rad = this->rotation * SDL_PI_D / 180.0;
 
     // top left
     Vec2d tmp = {-this->rect.w / 2, -this->rect.h / 2};
-    tmp       = Vec2d_rotate(&tmp, rad);
-    dst[0]    = Vec2d_add(&tmp, &e_center);
+    tmp = Vec2d_rotate(&tmp, rad);
+    dst[0] = Vec2d_add(&tmp, &e_center);
 
     // top right
-    tmp.x  = this->rect.w / 2;
-    tmp.y  = -this->rect.h / 2;
-    tmp    = Vec2d_rotate(&tmp, rad);
+    tmp.x = this->rect.w / 2;
+    tmp.y = -this->rect.h / 2;
+    tmp = Vec2d_rotate(&tmp, rad);
     dst[1] = Vec2d_add(&tmp, &e_center);
 
     // bottom left
-    tmp.x  = -this->rect.w / 2;
-    tmp.y  = this->rect.h / 2;
-    tmp    = Vec2d_rotate(&tmp, rad);
+    tmp.x = -this->rect.w / 2;
+    tmp.y = this->rect.h / 2;
+    tmp = Vec2d_rotate(&tmp, rad);
     dst[2] = Vec2d_add(&tmp, &e_center);
 
     // bottom right
-    tmp.x  = this->rect.w / 2;
-    tmp.y  = this->rect.h / 2;
-    tmp    = Vec2d_rotate(&tmp, rad);
+    tmp.x = this->rect.w / 2;
+    tmp.y = this->rect.h / 2;
+    tmp = Vec2d_rotate(&tmp, rad);
     dst[3] = Vec2d_add(&tmp, &e_center);
 }
 
 void Enemy_get_normals(const Enemy *this, Vec2d dst[2]) {
     double rad = this->rotation * SDL_PI_D / 180.0;
-    dst[0].x   = SDL_cos(rad);
-    dst[0].y   = SDL_sin(rad);
+    dst[0].x = SDL_cos(rad);
+    dst[0].y = SDL_sin(rad);
 
     rad += SDL_PI_D / 2;
     dst[1].x = SDL_cos(rad);
