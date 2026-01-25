@@ -75,6 +75,7 @@ target_sources(git-commits-bullet-hell PRIVATE
     pattern.c
     utils.c
     math.c
+    args_parser.c
     "${CMAKE_BINARY_DIR}/include/font.h"
     "${CMAKE_BINARY_DIR}/include/heart.h"
     "${CMAKE_BINARY_DIR}/include/broken_heart.h"

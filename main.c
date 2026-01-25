@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "args_parser.h"
 #include "broken_heart.h"
 #include "enemy.h"
 #include "font.h"
@@ -65,8 +66,8 @@ static unsigned long pattern_start_ms = 0;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
-    (void)argc;
-    (void)argv;
+
+    app_arguments args = parse_args(argc, argv);
 
     SDL_SetAppMetadata("GitCommitsBulletHell",
                        GitCommitsBulletHell_VERSION,
@@ -118,7 +119,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     if (error < 0)
         libgit_panic(error);
 
-    error = git_repository_open_ext(&repo, getenv("PWD"), 0, NULL);
+    error = git_repository_open_ext(&repo, args.path, 0, NULL);
     if (error < 0)
         libgit_panic(error);
 
