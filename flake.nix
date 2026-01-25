@@ -15,11 +15,9 @@
       pkgs = import nixpkgs { system = "x86_64-linux"; };
       deps = {
         nativeBuildInputs = with pkgs; [
+          git
           cmake
           xxd
-        ];
-        buildInputs = with pkgs; [
-          git
           sdl3
           sdl3-image
           sdl3-ttf
@@ -34,7 +32,7 @@
 
         src = ./.;
 
-        inherit (deps) nativeBuildInputs buildInputs;
+        inherit (deps) nativeBuildInputs;
 
         configurePhase = ''
           cmake -B build
@@ -68,8 +66,7 @@
             clang-analyzer
             clang-tools
           ]
-          ++ deps.nativeBuildInputs
-          ++ deps.buildInputs;
+          ++ deps.nativeBuildInputs;
       };
 
       devShells.x86_64-linux.default = self.devShells.x86_64-linux.git-commits-bullet-hell;
