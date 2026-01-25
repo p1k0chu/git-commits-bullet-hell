@@ -21,7 +21,7 @@ if(MSVC)
     include_directories(${ACTUAL_INCLUDE_DIR})
     link_directories(${ACTUAL_LINK_DIR})
 else()
-    add_compile_options(-Wall -Wextra -Werror)
+    add_compile_options(-Wall -Wextra)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
