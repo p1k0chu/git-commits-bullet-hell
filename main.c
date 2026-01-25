@@ -1,9 +1,9 @@
 #include "main.h"
 
 #include "broken_heart.h"
-#include "buffer.h"
 #include "enemy.h"
 #include "font.h"
+#include "git2/types.h"
 #include "heart.h"
 #include "my_math.h"
 #include "pattern.h"
@@ -17,6 +17,7 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <git2.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -37,8 +38,6 @@
         SDL_DestroySurface(surface);                                                           \
     }
 
-Buffer buffer = {0};
-
 SDL_Window   *window   = NULL;
 SDL_Renderer *renderer = NULL;
 
@@ -52,7 +51,8 @@ Enemy *enemies       = NULL;
 size_t enemies_len   = 0;
 size_t alive_enemies = 0;
 
-char has_more_commits = 1;
+git_repository *repo   = NULL;
+git_revwalk    *walker = NULL;
 
 char inputs[INPUTS_SIZE];
 char started = 0;
@@ -61,8 +61,6 @@ static SDL_Texture *start_hint = NULL;
 
 static BulletPatternId pattern_id       = Dummy;
 static unsigned long   pattern_start_ms = 0;
-
-static SDL_Process *git_proc = NULL;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     (void)appstate;
@@ -112,13 +110,18 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
                                      WINDOW_HEIGHT,
                                      SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    buffer.buffer_start = calloc(10, sizeof(char));
-    buffer.buffer_size  = 10 * sizeof(char);
+    int error;
+    error = git_libgit2_init();
+    if (error < 0) libgit_panic(error);
 
-    const char *cmd[] = {"git", "log", "--pretty=%s", NULL};
+    error = git_repository_open_ext(&repo, getenv("PWD"), 0, NULL);
+    if (error < 0) libgit_panic(error);
 
-    git_proc      = SDL_CreateProcess(cmd, 1);
-    buffer.stream = SDL_GetProcessOutput(git_proc);
+    error = git_revwalk_new(&walker, repo);
+    if (error < 0) libgit_panic(error);
+
+    error = git_revwalk_push_head(walker);
+    if (error < 0) libgit_panic(error);
 
     return SDL_APP_CONTINUE;
 }
@@ -325,8 +328,5 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
         TTF_CloseFont(font);
     }
     TTF_Quit();
-
-    SDL_KillProcess(git_proc, 1);
-    free(buffer.buffer_start);
 }
 

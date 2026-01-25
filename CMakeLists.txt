@@ -45,6 +45,7 @@ if (NOT MSVC)
     find_package(SDL3 REQUIRED)
     find_package(SDL3_ttf REQUIRED)
     find_package(SDL3_image REQUIRED)
+    find_package(libgit2 CONFIG REQUIRED)
 endif()
 
 configure_file(version.h.in include/version.h)
@@ -83,6 +84,7 @@ target_link_libraries(git-commits-bullet-hell PRIVATE
     SDL3
     SDL3_ttf
     SDL3_image
+    git2
 )
 target_include_directories(git-commits-bullet-hell PRIVATE 
     ${CMAKE_SOURCE_DIR}/include

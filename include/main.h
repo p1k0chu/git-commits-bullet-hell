@@ -1,7 +1,7 @@
 #pragma once
 
-#include "buffer.h"
 #include "enemy.h"
+#include "git2/types.h"
 #include "player.h"
 
 #include <SDL3_ttf/SDL_ttf.h>
@@ -19,8 +19,6 @@ enum Inputs {
 };
 #define INPUTS_SIZE 6
 
-extern Buffer buffer;
-
 extern SDL_Window   *window;
 extern SDL_Renderer *renderer;
 
@@ -34,7 +32,8 @@ extern Enemy *enemies;
 extern size_t enemies_len;
 extern size_t alive_enemies;
 
-extern char has_more_commits;
+extern git_repository *repo;
+extern git_revwalk    *walker;
 
 extern char inputs[INPUTS_SIZE];
 extern char started;

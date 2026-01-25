@@ -1,6 +1,8 @@
 #include "enemy.h"
 
 #include "buffer.h"
+#include "git2/commit.h"
+#include "git2/revwalk.h"
 #include "main.h"
 #include "my_math.h"
 #include "utils.h"
@@ -18,21 +20,23 @@ int spawn_enemy(Enemy *const       dst,
                 double             rotation,
                 const Vec2d        move_direction,
                 const unsigned int pattern_id) {
-    if (!has_more_commits) return 0;
+    git_oid oid;
+    if (git_revwalk_next(&oid, walker) != 0) return 0;
 
-    char *line;
-    if (!(line = Buffer_get_line(&buffer))) die("Buffer_get_line");
+    git_commit *commit;
+    int         error = git_commit_lookup(&commit, repo, &oid);
+    if (error < 0) libgit_panic(error);
 
-    if (line[0] == 0) {
-        has_more_commits = 0;
-        return 0;
-    }
+    const char *line = git_commit_summary(commit);
+    if (line == NULL) libgit_panic(0);
 
     dst->speed      = speed;
     dst->pattern_id = pattern_id;
 
     SDL_Surface *surface = TTF_RenderText_Blended(font, line, 0, color);
     if (!surface) sdl_die("");
+
+    git_commit_free(commit);
 
     dst->texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_DestroySurface(surface);

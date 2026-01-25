@@ -18,6 +18,7 @@
           git
           cmake
           xxd
+          libgit2
           sdl3
           sdl3-image
           sdl3-ttf
