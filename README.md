@@ -10,21 +10,13 @@ no bullet patterns yet, all commits spawn in top right corner facing the player
 
 ### Build
 
-On nix, just run `nix run .`
+On nix, running `nix run .` should be enough. Otherwise, read on...
 
-otherwise, to build this project you need these dependencies: `xxd git cmake sdl3 sdl3-ttf sdl3-image libgit2` (or see `flake.nix`/`CMakeLists.txt` for up-to-date deps)
+This project uses [cbuild](https://github.com/p1k0chu/cbuild). You need to clone with submodules, then
+in project's root run `./lib/cbuild/bootstrap.sh`, after this running
+`./build` will compile the project
 
-
-very standard process:
-```sh
-cmake -B build
-cmake --build build
-# run the program:
-# ./build/git-commits-bullet-hell
-```
-
-
-
+Dependencies: `xxd git cmake sdl3 sdl3-ttf sdl3-image libgit2` (or see `flake.nix`/`build.c` for up-to-date deps)
 
 # License
 

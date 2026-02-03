@@ -14,7 +14,6 @@
 #include "pattern.h"
 #include "player.h"
 #include "utils.h"
-#include "version.h"
 
 #define SDL_MAIN_USE_CALLBACKS 1
 

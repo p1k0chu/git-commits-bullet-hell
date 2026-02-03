@@ -58,3 +58,12 @@ build
 compile_commands.json
 .cache
 .direnv
+
+# generated headers
+/broken_heart.h
+/heart.h
+/font.h
+/build.h
+
+# executable
+/git-commits-bullet-hell

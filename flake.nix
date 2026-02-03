@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    self.submodules = true;
   };
 
   outputs =
@@ -16,7 +17,7 @@
       deps = {
         nativeBuildInputs = with pkgs; [
           git
-          cmake
+          pkg-config
           xxd
           libgit2
           sdl3
@@ -36,16 +37,17 @@
         inherit (deps) nativeBuildInputs;
 
         configurePhase = ''
-          cmake -B build
+          patchShebangs .
+          ./lib/cbuild/bootstrap.sh
         '';
 
         buildPhase = ''
-          cmake --build build
+          ./build
         '';
 
         installPhase = ''
-          mkdir -p $out
-          cmake --install build --prefix $out
+          mkdir -p $out/bin
+          install git-commits-bullet-hell $out/bin
         '';
 
         meta = {
@@ -66,6 +68,7 @@
           [
             clang-analyzer
             clang-tools
+            intercept-build
           ]
           ++ deps.nativeBuildInputs;
       };
