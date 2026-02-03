@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2026 p1k0chu
+
 #include "my_math.h"
 
 #include <SDL3/SDL_stdinc.h>

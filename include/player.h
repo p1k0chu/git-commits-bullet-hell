@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2026 p1k0chu
+
 #pragma once
 
 #include "my_math.h"

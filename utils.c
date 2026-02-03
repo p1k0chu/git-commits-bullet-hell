@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2026 p1k0chu
 
 #include "git2/errors.h"
 #include "stdio.h"

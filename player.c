@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2026 p1k0chu
+
 #include "player.h"
 
 void Player_get_points(const Player *this, Vec2d dst[4]) {
