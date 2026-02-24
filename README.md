@@ -12,7 +12,7 @@ no bullet patterns yet, all commits spawn in top right corner facing the player
 
 On nix, just run `nix run .`
 
-otherwise, to build this project you need these dependencies: `xxd git cmake sdl3 sdl3-ttf sdl3-image libgit2` (or see `flake.nix`/`CMakeLists.txt` for up-to-date deps)
+otherwise, to build this project you need dependencies: `xxd git cmake sdl3 sdl3-ttf sdl3-image libgit2`
 
 
 very standard process:
