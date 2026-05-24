@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include <optional>
 #include <stddef.h>
+#include <string>
 
 #define die(s)                                                       \
     {                                                                \
@@ -23,4 +25,4 @@
 
 const char *strnchr(const char *s, int c, size_t n);
 void libgit_panic(int error);
-
+std::optional<std::string> get_next_commit_summary();

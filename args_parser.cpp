@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2026 p1k0chu
 
-#include "args_parser.h"
+#include "args_parser.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +10,7 @@
 static void print_help(char *program_name);
 
 app_arguments parse_args(int argc, char **argv) {
-    app_arguments args = {0};
+    app_arguments args;
 
     enum {
         NOTHING,
@@ -70,3 +70,4 @@ static void print_help(char *s) {
     exit(0);
 }
 
+app_arguments::app_arguments() : path(nullptr), rev_push(nullptr), rev_hide(nullptr) {}

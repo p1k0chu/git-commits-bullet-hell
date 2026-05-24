@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "enemy.h"
+#include "enemy.hpp"
 #include "git2/types.h"
-#include "player.h"
+#include "player.hpp"
 
 #include <SDL3_ttf/SDL_ttf.h>
 
@@ -31,9 +31,6 @@ extern SDL_Texture *player_texture;
 extern SDL_Texture *dead_player_texture;
 
 extern Player player;
-extern Enemy *enemies;
-extern size_t enemies_len;
-extern size_t alive_enemies;
 
 extern git_repository *repo;
 extern git_revwalk *walker;

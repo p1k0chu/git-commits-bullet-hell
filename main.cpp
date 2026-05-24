@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: MIT
 // Copyright (C) 2026 p1k0chu
 
-#include "main.h"
+#include "main.hpp"
 
-#include "args_parser.h"
+#include "args_parser.hpp"
 #include "broken_heart.h"
-#include "enemy.h"
+#include "enemy.hpp"
 #include "font.h"
 #include "git2/commit.h"
 #include "git2/types.h"
 #include "heart.h"
-#include "my_math.h"
-#include "pattern.h"
-#include "player.h"
-#include "utils.h"
+#include "my_math.hpp"
+#include "pattern.hpp"
+#include "pattern_factory.hpp"
+#include "player.hpp"
+#include "utils.hpp"
 #include "version.h"
 
 #define SDL_MAIN_USE_CALLBACKS 1
@@ -22,10 +23,13 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <assert.h>
 #include <git2.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+
+using Patterns::BasePattern;
 
 #define load_png_file(array, size, dst)                                 \
     {                                                                   \
@@ -52,10 +56,7 @@ TTF_Font *font = NULL;
 SDL_Texture *player_texture = NULL;
 SDL_Texture *dead_player_texture = NULL;
 
-Player player = {.alive = 1};
-Enemy *enemies = NULL;
-size_t enemies_len = 0;
-size_t alive_enemies = 0;
+Player player{};
 
 git_repository *repo = NULL;
 git_revwalk *walker = NULL;
@@ -65,8 +66,8 @@ char started = 0;
 
 static SDL_Texture *start_hint = NULL;
 
-static BulletPatternId pattern_id = Dummy;
-static unsigned long pattern_start_ms = 0;
+static BasePattern *pattern = nullptr;
+static PatternFactory pattern_factory{};
 
 static git_commit *get_commit_from_string(git_repository *repo, const char *s) {
     int error;
@@ -182,6 +183,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     case SDL_EVENT_KEY_DOWN:
         switch (event->key.key) {
         case SDLK_ESCAPE:
+        case SDLK_Q:
             return SDL_APP_SUCCESS;
         case SDLK_LEFT:
             inputs[INPUT_LEFT] = 1;
@@ -235,8 +237,6 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     (void)appstate;
 
-    size_t i;
-
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
     SDL_RenderClear(renderer);
 
@@ -287,55 +287,20 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     }
 
     if (started) {
-        speed_mul = (double)dt / 1000.f;
-
-        SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
-
-        for (i = 0; i < alive_enemies; ++i) {
-            Enemy *enemy = enemies + i;
-            tick_enemy(enemy->pattern_id, enemy);
-
-            enemy->rect.x += enemy->move_direction.x * enemy->speed * speed_mul;
-            enemy->rect.y += enemy->move_direction.y * enemy->speed * speed_mul;
-
-            if (collide(&player, enemy)) {
-                player.alive = 0;
-                return SDL_APP_CONTINUE;
-            }
-
-            Vec2d normals[4] = {{1, 0}, {0, 1}};
-            Enemy_get_normals(enemy, normals + 2);
-
-            static const Vec2d screen_points[4] = {{0, 0},
-                                                   {WINDOW_WIDTH, 0},
-                                                   {0, WINDOW_HEIGHT},
-                                                   {WINDOW_WIDTH, WINDOW_HEIGHT}};
-            Vec2d enemy_points[4];
-            Enemy_get_points(enemy, enemy_points);
-
-            if (!polygons_collide(normals, 4, enemy_points, 4, screen_points, 4)) {
-                SDL_DestroyTexture(enemies[i].texture);
-                if (i != alive_enemies - 1) {
-                    enemies[i] = enemies[alive_enemies - 1];
-                }
-                --alive_enemies;
+        // SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
+        if (pattern_factory.has_next() &&
+            (pattern == nullptr ||
+             (pattern->enemies.empty() && pattern->should_start_next_pattern()))) {
+            delete pattern;
+            if (walker != nullptr) {
+                pattern = pattern_factory.create_next();
+                assert(pattern != nullptr);
+            } else {
+                pattern = nullptr;
             }
         }
-
-        if (should_start_next_pattern(pattern_id, ms - pattern_start_ms)) {
-            if (alive_enemies > 0)
-                goto render;
-
-            pattern_id = (pattern_id + 1) % BULLET_PATTERN_ID_LEN;
-            pattern_start_ms = ms;
-
-#ifndef NDEBUG
-            fprintf(stderr, "starting next pattern\n");
-#endif
-        }
-
-        if (should_spawn_enemies(pattern_id, ms)) {
-            spawn_enemies(pattern_id);
+        if (pattern != nullptr) {
+            pattern->tick(dt);
         }
     } else {
         SDL_GetTextureSize(start_hint, &dst.w, &dst.h);
@@ -344,17 +309,10 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
         SDL_RenderTexture(renderer, start_hint, NULL, &dst);
     }
 
-render:;
-    for (i = 0; i < alive_enemies; ++i) {
-        Enemy *enemy = enemies + i;
-
-        SDL_RenderTextureRotated(renderer,
-                                 enemy->texture,
-                                 NULL,
-                                 &enemy->rect,
-                                 enemy->rotation,
-                                 NULL,
-                                 SDL_FLIP_NONE);
+    if (pattern != nullptr) {
+        for (auto &enemy : pattern->enemies) {
+            enemy.render(renderer);
+        }
     }
 
     SDL_GetTextureSize(player_texture, &dst.w, &dst.h);

@@ -3,20 +3,24 @@
 
 #pragma once
 
-#include "my_math.h"
+#include "my_math.hpp"
 
 #include <SDL3/SDL_render.h>
+#include <span>
 
 #define PLAYER_SPEED 400
 #define PLAYER_SHIFT_SPEED_MUL .3f
 #define PLAYER_HITBOX_MUL 0.5f
 
-typedef struct Player {
-    double x;
-    double y;
+struct Player {
+    Player();
+    Player(double x, double y, float w, float h);
+
+    void get_points(std::span<Vec2d>) const;
+    Vec2d get_center() const;
+
+    double x, y;
     float w, h;
     char alive;
-} Player;
-
-void Player_get_points(const Player *this, Vec2d dst[4]);
+};
 
