@@ -14,7 +14,6 @@ On nix, just run `nix run .`
 
 otherwise, to build this project you need dependencies: `xxd git cmake sdl3 sdl3-ttf sdl3-image libgit2`
 
-
 very standard process:
 ```sh
 cmake -B build
@@ -22,9 +21,6 @@ cmake --build build
 # run the program:
 # ./build/git-commits-bullet-hell
 ```
-
-
-
 
 # License
 
