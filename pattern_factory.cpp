@@ -10,7 +10,7 @@ Patterns::BasePattern *PatternFactory::create_next() {
 }
 
 bool PatternFactory::has_next() const {
-    return counter < std::size(PatternFactory::factories);
+    return true;
 }
 
 Patterns::BasePattern *PatternFactory::create_top_down() {
