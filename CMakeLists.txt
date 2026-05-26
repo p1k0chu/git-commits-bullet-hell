@@ -3,7 +3,7 @@ project(GitCommitsBulletHell VERSION 0.0.0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(NOT MSVC)
-    add_compile_options(-Wall -Wextra)
+    add_compile_options(-Wall -Wextra -Werror=reorder)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
