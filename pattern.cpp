@@ -21,12 +21,13 @@ void BasePattern::tick(unsigned long dt_ms) {
         tick_enemy(*it, dt_ms);
         if (it->can_despawn() && should_despawn(*it)) {
             it = enemies.erase(it);
-        } else if (it->collides(player)) {
-            player.alive = 0;
-            return;
-        } else {
-            ++it;
+            continue;
         }
+        if (it->collides(player) && !it->is_yellow()) {
+            it->make_yellow();
+            hit_commits.push_back(it->steal_commit());
+        }
+        ++it;
     }
     ms_since_start += dt_ms;
 }
@@ -70,9 +71,9 @@ void TopDown::spawn_enemies() {
     assert(positions.size() == srcs.size());
 
     for (unsigned long i = 0; i < positions.size(); ++i) {
-        auto text = get_next_commit_summary();
+        auto text = get_next_commit();
         if (text.has_value()) {
-            Enemy enemy(text.value(),
+            Enemy enemy(std::move(text.value()),
                         positions[i],
                         srcs[i],
                         0,
@@ -97,8 +98,8 @@ void Homing::spawn_enemies() {
     const int counter = this->spawns_counter++;
     int offset = 50;
     for (int i = 0; i < 5; ++i) {
-        auto text = get_next_commit_summary();
-        if (!text.has_value()) {
+        auto commit = get_next_commit();
+        if (!commit.has_value()) {
             return;
         }
         const bool left = (counter / 2) % 2 == 0;
@@ -109,7 +110,7 @@ void Homing::spawn_enemies() {
         Vec2d move_vec{left ? 1 : -1, 0};
         pos.y += top ? offset : -offset;
 
-        Enemy enemy{text.value(),
+        Enemy enemy{std::move(commit.value()),
                     pos + (move_vec * 10),
                     anchor,
                     0,
@@ -141,8 +142,8 @@ void LeftAndRight::spawn_enemies() {
     int offset = 0;
     bool left = true;
     while (offset < WINDOW_HEIGHT - 1) {
-        auto text = get_next_commit_summary();
-        if (!text.has_value()) {
+        auto commit = get_next_commit();
+        if (!commit.has_value()) {
             return;
         }
 
@@ -150,7 +151,7 @@ void LeftAndRight::spawn_enemies() {
         Vec2d pos{left ? 0 : WINDOW_WIDTH, offset};
         Vec2d move_vec{left ? 1 : -1, 0};
 
-        Enemy enemy{text.value(),
+        Enemy enemy{std::move(commit.value()),
                     pos + (move_vec * 10),
                     anchor,
                     0,
@@ -225,12 +226,12 @@ void Scissors::scissors_spawn_one_line(std::vector<Enemy> &dst, double offset_y,
     Vec2d offset{0.0, offset_y};
 
     while (offset.x < WINDOW_WIDTH - 1) {
-        auto text = get_next_commit_summary();
-        if (!text.has_value()) {
+        auto commit = get_next_commit();
+        if (!commit.has_value()) {
             return;
         }
 
-        Enemy enemy{text.value(),
+        Enemy enemy{std::move(commit.value()),
                     offset,
                     Vec2d(0.5, 0.5),
                     90,

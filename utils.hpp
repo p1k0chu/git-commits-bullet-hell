@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "wrappers.hpp"
+
 #include <optional>
 #include <stddef.h>
 #include <string>
@@ -25,4 +27,4 @@
 
 const char *strnchr(const char *s, int c, size_t n);
 void libgit_panic(int error);
-std::optional<std::string> get_next_commit_summary();
+std::optional<Wrappers::Commit> get_next_commit();

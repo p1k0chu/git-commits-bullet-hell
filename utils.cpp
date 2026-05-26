@@ -27,7 +27,7 @@ void libgit_panic(int error) {
     throw std::runtime_error(std::format("libgit2 error: {}/{}: {}", error, s->klass, s->message));
 }
 
-std::optional<std::string> get_next_commit_summary() {
+std::optional<Wrappers::Commit> get_next_commit() {
     if (walker == nullptr) {
         return {};
     }
@@ -46,14 +46,6 @@ std::optional<std::string> get_next_commit_summary() {
     if (code < 0)
         libgit_panic(code);
 
-    const char *line = git_commit_summary(commit);
-    if (line == NULL)
-        libgit_panic(0);
-
-    std::string s{line};
-
-    git_commit_free(commit);
-
-    return s;
+    return commit;
 }
 

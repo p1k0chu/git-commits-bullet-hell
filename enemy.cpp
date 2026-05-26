@@ -19,13 +19,13 @@
 #include <stdlib.h>
 #include <vector>
 
-Enemy::Enemy(std::string text,
+Enemy::Enemy(Wrappers::Commit commit,
              Vec2d position,
              Vec2d spawn_src,
              double rotation,
              SDL_Color color,
              std::initializer_list<EnemyBehaviours::BaseBehaviour *> behaviours) :
-    rotation(fix_angle(rotation)) {
+    commit(std::move(commit)), rotation(fix_angle(rotation)) {
     assert(!SDL_isnan(rotation));
 
     this->behaviours.reserve(behaviours.size());
@@ -34,15 +34,7 @@ Enemy::Enemy(std::string text,
         this->behaviours.emplace_back(*(it--));
     }
 
-    SDL_Surface *surface = TTF_RenderText_Blended(font, text.c_str(), 0, color);
-    if (!surface)
-        throw SDL_GetError();
-
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_DestroySurface(surface);
-
-    if (!texture)
-        throw SDL_GetError();
+    update_texture(color);
 
     rect = SDL_FRect{};
     SDL_GetTextureSize(texture, &rect.w, &rect.h);
@@ -57,7 +49,7 @@ Enemy::~Enemy() {
 
 Enemy::Enemy(Enemy &&other) :
     texture(other.texture), rect(other.rect), behaviours(std::move(other.behaviours)),
-    rotation(other.rotation) {
+    _is_yellow(other._is_yellow), commit(std::move(other.commit)), rotation(other.rotation) {
     other.texture = nullptr;
 }
 
@@ -69,8 +61,10 @@ Enemy &Enemy::operator=(Enemy &&other) {
 
         rect = other.rect;
         rotation = other.rotation;
+        _is_yellow = other._is_yellow;
 
         behaviours = std::move(other.behaviours);
+        commit = std::move(other.commit);
     }
     return *this;
 }
@@ -180,6 +174,10 @@ Vec2d Enemy::get_dimensions() const {
     return Vec2d(rect.w, rect.h);
 }
 
+bool Enemy::is_yellow() const {
+    return _is_yellow;
+}
+
 void Enemy::move(Vec2d delta) {
     rect.x += delta.x;
     rect.y += delta.y;
@@ -193,4 +191,31 @@ void Enemy::move_to(Vec2d center) {
 void Enemy::move_to(Vec2d position, Vec2d anchor) {
     rect.x = position.x - rect.w * anchor.x;
     rect.y = position.y - rect.h * anchor.y;
+}
+
+void Enemy::make_yellow() {
+    if (_is_yellow) {
+        return;
+    }
+    update_texture({0xff, 0xff, 0, 0xff});
+    _is_yellow = true;
+}
+
+Wrappers::Commit Enemy::steal_commit() {
+    assert(_is_yellow);
+    assert(commit.has_value());
+    return std::move(commit);
+}
+
+void Enemy::update_texture(SDL_Color color) {
+    SDL_Surface *surface = TTF_RenderText_Blended(font, commit.summary(), 0, color);
+    if (!surface)
+        throw SDL_GetError();
+
+    SDL_DestroyTexture(texture);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_DestroySurface(surface);
+
+    if (!texture)
+        throw SDL_GetError();
 }

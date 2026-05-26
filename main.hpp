@@ -4,10 +4,12 @@
 #pragma once
 
 #include "enemy.hpp"
-#include "git2/types.h"
 #include "player.hpp"
+#include "wrappers.hpp"
 
 #include <SDL3_ttf/SDL_ttf.h>
+#include <git2/types.h>
+#include <vector>
 
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
@@ -34,6 +36,8 @@ extern Player player;
 
 extern git_repository *repo;
 extern git_revwalk *walker;
+
+extern std::vector<Wrappers::Commit> hit_commits;
 
 extern char inputs[INPUTS_SIZE];
 extern char started;

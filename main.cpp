@@ -25,6 +25,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <assert.h>
 #include <git2.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -60,6 +61,8 @@ Player player{};
 
 git_repository *repo = NULL;
 git_revwalk *walker = NULL;
+
+std::vector<Wrappers::Commit> hit_commits{};
 
 char inputs[INPUTS_SIZE];
 char started = 0;
@@ -329,6 +332,16 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
     (void)appstate;
     (void)result;
+
+    if (!hit_commits.empty()) {
+        std::cout << "Hit " << hit_commits.size() << " commits:" << std::endl;
+
+        auto commit = hit_commits.begin();
+        while (commit != hit_commits.end()) {
+            std::cout << commit->sha_str() << ": " << commit->summary() << std::endl;
+            ++commit;
+        }
+    }
 
     if (font) {
         TTF_CloseFont(font);

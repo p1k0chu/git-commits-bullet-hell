@@ -6,6 +6,7 @@
 #include "enemy_behaviour.hpp"
 #include "my_math.hpp"
 #include "player.hpp"
+#include "wrappers.hpp"
 
 #include <SDL3/SDL_render.h>
 #include <memory>
@@ -15,7 +16,7 @@
 
 class Enemy {
   public:
-    Enemy(std::string text,
+    Enemy(Wrappers::Commit commit,
           Vec2d position,
           Vec2d spawn_src,
           double rotation,
@@ -33,6 +34,8 @@ class Enemy {
     void move(Vec2d delta);
     void move_to(Vec2d center);
     void move_to(Vec2d position, Vec2d anchor);
+    void make_yellow();
+    Wrappers::Commit steal_commit();
 
     void get_points(std::span<Vec2d> into) const;
     void get_normals(std::span<Vec2d> into) const;
@@ -43,11 +46,16 @@ class Enemy {
     Vec2d get_center() const;
     Vec2d get_position_at(Vec2d anchor) const;
     Vec2d get_dimensions() const;
+    bool is_yellow() const;
 
   private:
+    void update_texture(SDL_Color color);
+
     SDL_Texture* texture;
     SDL_FRect rect;
     std::vector<std::unique_ptr<EnemyBehaviours::BaseBehaviour>> behaviours;
+    bool _is_yellow = false;
+    Wrappers::Commit commit;
 
   public:
     double rotation;

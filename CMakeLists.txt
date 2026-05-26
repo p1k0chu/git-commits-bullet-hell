@@ -73,6 +73,7 @@ add_executable(
     pattern.cpp
     pattern_factory.cpp
     utils.cpp
+    wrappers.cpp
     math.cpp
     args_parser.cpp
     "${CMAKE_BINARY_DIR}/include/font.h"
