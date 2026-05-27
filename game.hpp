@@ -45,7 +45,7 @@ class Game : public GamePhase {
 
     void run(unsigned long dt) override;
     void render(SDL_Renderer* renderer) const override;
-    GamePhase* get_next_phase();
+    GamePhase* get_next_phase() override;
 
     bool still_active() const override;
 
@@ -54,3 +54,39 @@ class Game : public GamePhase {
     PatternFactory pattern_factory;
 };
 
+class AfterGameEntity {
+  public:
+    AfterGameEntity(Wrappers::Commit& commit, Vec2d where, Vec2d spawn_src);
+    ~AfterGameEntity();
+
+    AfterGameEntity(const AfterGameEntity&) = delete;
+    AfterGameEntity& operator=(const AfterGameEntity&) = delete;
+
+    AfterGameEntity(AfterGameEntity&&);
+    AfterGameEntity& operator=(AfterGameEntity&&);
+
+    void move(Vec2d delta);
+
+    void render(SDL_Renderer* renderer) const;
+    double get_y() const;
+
+  private:
+    SDL_FRect rect;
+    SDL_Texture* texture;
+};
+
+class AfterGame : public GamePhase {
+  public:
+    AfterGame();
+
+    void run(unsigned long dt) override;
+    void render(SDL_Renderer* renderer) const override;
+    GamePhase* get_next_phase() override;
+
+    bool still_active() const override;
+
+  private:
+    std::vector<AfterGameEntity> enemies{};
+    std::vector<Wrappers::Commit>::iterator commit_iter;
+    long since_spawn = 0;
+};

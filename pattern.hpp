@@ -8,6 +8,7 @@
 namespace Patterns {
 
 static const SDL_Color SDL_COLOR_WHITE = {0xff, 0xff, 0xff, 0xff};
+static const SDL_Color SDL_COLOR_YELLOW = {0xff, 0xff, 0x00, 0xff};
 
 class BasePattern {
   public:
