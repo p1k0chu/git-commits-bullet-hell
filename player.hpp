@@ -16,8 +16,11 @@ struct Player {
     Player();
     Player(double x, double y, float w, float h);
 
+    void handle_inputs(char *inputs, unsigned long dt);
+
     void get_points(std::span<Vec2d>) const;
     Vec2d get_center() const;
+    void render(SDL_Renderer *renderer) const;
 
     double x, y;
     float w, h;

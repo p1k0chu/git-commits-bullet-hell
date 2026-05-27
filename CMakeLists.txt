@@ -66,16 +66,17 @@ add_custom_command(
 
 add_executable(
     git-commits-bullet-hell
-    main.cpp
-    enemy.cpp
+    args_parser.cpp
     enemy_behaviour.cpp
-    player.cpp
-    pattern.cpp
+    enemy.cpp
+    game.cpp
+    main.cpp
+    math.cpp
     pattern_factory.cpp
+    pattern.cpp
+    player.cpp
     utils.cpp
     wrappers.cpp
-    math.cpp
-    args_parser.cpp
     "${CMAKE_BINARY_DIR}/include/font.h"
     "${CMAKE_BINARY_DIR}/include/heart.h"
     "${CMAKE_BINARY_DIR}/include/broken_heart.h"

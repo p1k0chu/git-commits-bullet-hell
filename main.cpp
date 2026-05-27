@@ -19,6 +19,8 @@
 
 #define SDL_MAIN_USE_CALLBACKS 1
 
+#include "game.hpp"
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
@@ -62,15 +64,13 @@ Player player{};
 git_repository *repo = NULL;
 git_revwalk *walker = NULL;
 
+static std::unique_ptr<GamePhase> game{new PreGame()};
+
 std::vector<Wrappers::Commit> hit_commits{};
 
 char inputs[INPUTS_SIZE];
-char started = 0;
 
-static SDL_Texture *start_hint = NULL;
-
-static BasePattern *pattern = nullptr;
-static PatternFactory pattern_factory{};
+SDL_Texture *start_hint = NULL;
 
 static git_commit *get_commit_from_string(git_repository *repo, const char *s) {
     int error;
@@ -207,7 +207,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
             inputs[INPUT_X] = 1;
             break;
         case SDLK_Z:
-            started = 1;
+            inputs[INPUT_Z] = 1;
             break;
         }
         break;
@@ -231,6 +231,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDLK_X:
             inputs[INPUT_X] = 0;
             break;
+        case SDLK_Z:
+            inputs[INPUT_Z] = 0;
+            break;
         }
     }
 
@@ -240,90 +243,24 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     (void)appstate;
 
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
-    SDL_RenderClear(renderer);
-
-    SDL_FRect dst = {};
-
-    if (!player.alive) {
-        SDL_GetTextureSize(dead_player_texture, &dst.w, &dst.h);
-
-        dst.x = player.x - dst.w / 2;
-        dst.y = player.y - dst.h / 2;
-
-        SDL_RenderTexture(renderer, dead_player_texture, NULL, &dst);
-        SDL_RenderPresent(renderer);
-
-        return SDL_APP_CONTINUE;
-    }
-
     static unsigned long last_ms = 0;
-
     unsigned long ms = SDL_GetTicks();
     unsigned long dt = ms - last_ms;
     last_ms = ms;
 
-    double speed_mul = (double)dt / 1000.f;
-
-    if (inputs[INPUT_SHIFT] || inputs[INPUT_X]) {
-        speed_mul *= PLAYER_SHIFT_SPEED_MUL;
-    }
-
-    if (inputs[INPUT_LEFT]) {
-        player.x -= PLAYER_SPEED * speed_mul;
-        if (player.x < player.w / PLAYER_HITBOX_MUL / 2)
-            player.x = player.w / PLAYER_HITBOX_MUL / 2;
-    } else if (inputs[INPUT_RIGHT]) {
-        player.x += PLAYER_SPEED * speed_mul;
-        if (player.x > WINDOW_WIDTH - player.w / PLAYER_HITBOX_MUL / 2)
-            player.x = WINDOW_WIDTH - player.w / PLAYER_HITBOX_MUL / 2;
-    }
-
-    if (inputs[INPUT_UP]) {
-        player.y -= PLAYER_SPEED * speed_mul;
-        if (player.y < player.h / PLAYER_HITBOX_MUL / 2)
-            player.y = player.h / PLAYER_HITBOX_MUL / 2;
-    } else if (inputs[INPUT_DOWN]) {
-        player.y += PLAYER_SPEED * speed_mul;
-        if (player.y > WINDOW_HEIGHT - player.h / PLAYER_HITBOX_MUL / 2)
-            player.y = WINDOW_HEIGHT - player.h / PLAYER_HITBOX_MUL / 2;
-    }
-
-    if (started) {
-        // SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
-        if (pattern_factory.has_next() &&
-            (pattern == nullptr ||
-             (pattern->enemies.empty() && pattern->should_start_next_pattern()))) {
-            delete pattern;
-            if (walker != nullptr) {
-                pattern = pattern_factory.create_next();
-                assert(pattern != nullptr);
-            } else {
-                pattern = nullptr;
-            }
-        }
-        if (pattern != nullptr) {
-            pattern->tick(dt);
-        }
+    if (game->still_active()) {
+        game->run(dt);
     } else {
-        SDL_GetTextureSize(start_hint, &dst.w, &dst.h);
-        dst.x = (WINDOW_WIDTH - dst.w) / 2;
-        dst.y = 0;
-        SDL_RenderTexture(renderer, start_hint, NULL, &dst);
-    }
-
-    if (pattern != nullptr) {
-        for (auto &enemy : pattern->enemies) {
-            enemy.render(renderer);
+        auto game1 = game->get_next_phase();
+        if (game1 == nullptr) {
+            return SDL_APP_SUCCESS;
         }
+        game = std::move(std::unique_ptr<GamePhase>(game1));
     }
 
-    SDL_GetTextureSize(player_texture, &dst.w, &dst.h);
-    dst.x = player.x - dst.w / 2;
-    dst.y = player.y - dst.h / 2;
-
-    SDL_RenderTexture(renderer, player_texture, NULL, &dst);
-
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
+    SDL_RenderClear(renderer);
+    game->render(renderer);
     SDL_RenderPresent(renderer);
 
     return SDL_APP_CONTINUE;

@@ -21,8 +21,9 @@ enum Inputs {
     INPUT_DOWN,
     INPUT_SHIFT,
     INPUT_X,
+    INPUT_Z,
 };
-#define INPUTS_SIZE 6
+#define INPUTS_SIZE 7
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
@@ -40,5 +41,5 @@ extern git_revwalk *walker;
 extern std::vector<Wrappers::Commit> hit_commits;
 
 extern char inputs[INPUTS_SIZE];
-extern char started;
 
+extern SDL_Texture *start_hint;
